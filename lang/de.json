@@ -1,0 +1,111 @@
+{
+  "SLA": {
+    "LANGUAGE": {
+      "default": "Wie Foundry",
+      "de": "Deutsch",
+      "en": "English"
+    },
+    "Duration": {
+      "Days": "{days} T",
+      "DaysHours": "{days} T {hours} Std",
+      "Hours": "{hours} Std",
+      "LessThanHour": "unter einer Stunde"
+    },
+    "Phase": {
+      "none": "Ruhend",
+      "waxing": "Zunehmend",
+      "full": "Voll",
+      "waning": "Abnehmend",
+      "dormant": "Ruhend",
+      "ascending": "Aufsteigend",
+      "dominant": "Dominant",
+      "descending": "Absteigend"
+    },
+    "Almanac": {
+      "Title": "Mondalmanach",
+      "Open": "Mondalmanach",
+      "NoEmber": "Der Mondalmanach braucht das Modul Ember.",
+      "NoCalendar": "Embers Kalender ist nicht bereit. Er braucht die Szenen des Ember-Abenteuers in dieser Welt.",
+      "Moons": "Monde",
+      "Realms": "Innere Reiche",
+      "Unbound": "Weitere Attunements",
+      "Timeline": "Die nächsten {days} Tage",
+      "DayMark": "+{days} T",
+      "Cosmos": "Kosmoskarte zeigen",
+      "Influence": "Einfluss {value} %",
+      "EndsIn": "noch {duration}",
+      "EndsOn": "Bis {date}",
+      "StartsIn": "in {duration}",
+      "PeakOn": "Am {date}",
+      "PeakIn": {
+        "moon": "Vollmond in {duration}",
+        "realm": "Dominant in {duration}"
+      }
+    },
+    "Hero": {
+      "Rank": "Rang {rank}",
+      "RankShort": "R{rank}",
+      "Blessed": "Gesegnet: Rang {rank} statt {base}",
+      "BlessingLeft": "noch {remaining}"
+    },
+    "Alert": {
+      "Peak": {
+        "moon": "{name} ist voll.",
+        "realm": "{name} ist dominant."
+      },
+      "Change": "{name}: {phase}.",
+      "Heroes": "Attunement: {names}."
+    },
+    "SETTINGS": {
+      "uiLanguage": {
+        "name": "Modulsprache",
+        "hint": "Sprache des Mondalmanachs für dich. „Wie Foundry“ nimmt die Sprache von Foundry."
+      },
+      "phaseAlert": {
+        "name": "Hinweise zu Phasen",
+        "hint": "Über welche Phasenwechsel du informiert wirst, wenn die Weltzeit weiterläuft.",
+        "peak": "Vollmonde und dominante Reiche",
+        "attuned": "Jeder Wechsel eines Mondes oder Reichs mit Attunement eines Helden",
+        "all": "Jeder Phasenwechsel",
+        "off": "Keine"
+      },
+      "chatAlert": {
+        "name": "Vollmonde im Chat",
+        "hint": "Der Client der Spielleitung schreibt eine Chatnachricht für alle, wenn ein Mond voll oder ein Reich dominant wird."
+      },
+      "timelineDays": {
+        "name": "Länge der Zeitleiste",
+        "hint": "Wie viele Tage die Zeitleiste im Almanach zeigt. 0 blendet sie aus."
+      },
+      "calendarButton": {
+        "name": "Knopf in Embers Kalender",
+        "hint": "Ein Mondknopf neben dem Kosmosknopf in Embers Kalender öffnet den Almanach."
+      },
+      "controlButton": {
+        "name": "Knopf in den Token-Werkzeugen",
+        "hint": "Fügt den Almanach zu den Token-Werkzeugen am linken Rand hinzu."
+      }
+    },
+    "SELFTEST": {
+      "Title": "Mondalmanach Selbsttest",
+      "Run": "Selbsttest starten",
+      "Hint": "Prüft die Teile von Ember, die der Almanach liest. Nach jedem Update von Ember oder Foundry ausführen.",
+      "Started": "Selbsttest des Mondalmanachs läuft …",
+      "Passed": "Selbsttest bestanden: {checks} Prüfungen, {moons} Monde, {realms} Reiche, {heroes} Helden mit Attunement.",
+      "Problems": "Selbsttest: {problems} von {checks} Prüfungen fehlgeschlagen. Details im Chat.",
+      "Version": "{id} {current} (geprüft {tested})",
+      "NewVersions": "Der Mondalmanach wurde mit älteren Versionen als {versions} geprüft. Der Selbsttest in den Moduleinstellungen zeigt, ob noch alles funktioniert.",
+      "EmberInactive": "Das Modul Ember ist nicht aktiv.",
+      "NoCalendar": "Embers Kalender ist nicht bereit (die Szenen des Ember-Abenteuers fehlen oder Ember konnte nicht starten).",
+      "MoonCount": "Embers Kalender hat {count} Monde statt 6.",
+      "RealmCount": "Embers Kalender hat {count} innere Reiche statt 3.",
+      "Units": "Die Zeiteinheiten des Kalenders ließen sich nicht lesen.",
+      "Phase": "Die Phase von {name} ließ sich nicht berechnen.",
+      "Forecast": "Der nächste Phasenwechsel von {name} ließ sich nicht finden.",
+      "Image": "Das Bild von {name} ließ sich nicht laden: {src}",
+      "Attunements": "Embers Attunement-Optionen fehlen.",
+      "Rank": "Embers Funktion für den Attunement-Rang fehlt, Ränge werden nicht angezeigt.",
+      "Heroes": "Keiner der Spielercharaktere hat ein Ember-Attunement."
+    }
+  }
+}

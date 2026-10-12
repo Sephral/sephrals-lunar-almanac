@@ -1,0 +1,46 @@
+{
+  "id": "sephrals-lunar-almanac",
+  "title": "Sephral’s Lunar Almanac",
+  "description": "An almanac for the sky of Ember: the phase of every moon and inner realm, how long it lasts, when the next full moon comes, a timeline of the coming days and the heroes attuned to each of them, with optional notifications when a moon becomes full.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": 14,
+    "verified": "14.369"
+  },
+  "authors": [
+    {
+      "name": "Sephral"
+    }
+  ],
+  "url": "https://github.com/Sephral/sephrals-lunar-almanac.git",
+  "relationships": {
+    "requires": [
+      {
+        "id": "ember",
+        "type": "module",
+        "compatibility": {
+          "minimum": "0.6.3",
+          "verified": "0.6.3"
+        }
+      }
+    ]
+  },
+  "esmodules": [
+    "scripts/sla.mjs"
+  ],
+  "styles": [
+    "styles/sla.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "de",
+      "name": "Deutsch",
+      "path": "lang/de.json"
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "SLA": {
+    "LANGUAGE": {
+      "default": "Follow Foundry",
+      "de": "Deutsch",
+      "en": "English"
+    },
+    "Duration": {
+      "Days": "{days} d",
+      "DaysHours": "{days} d {hours} h",
+      "Hours": "{hours} h",
+      "LessThanHour": "less than an hour"
+    },
+    "Phase": {
+      "none": "Dormant",
+      "waxing": "Waxing",
+      "full": "Full",
+      "waning": "Waning",
+      "dormant": "Dormant",
+      "ascending": "Ascending",
+      "dominant": "Dominant",
+      "descending": "Descending"
+    },
+    "Almanac": {
+      "Title": "Lunar Almanac",
+      "Open": "Lunar Almanac",
+      "NoEmber": "The Lunar Almanac needs the Ember module.",
+      "NoCalendar": "Ember's calendar is not ready. It needs the scenes of the Ember adventure in this world.",
+      "Moons": "Moons",
+      "Realms": "Inner realms",
+      "Unbound": "Other attunements",
+      "Timeline": "Next {days} days",
+      "DayMark": "+{days} d",
+      "Cosmos": "Show the cosmos map",
+      "Influence": "Influence {value}%",
+      "EndsIn": "{duration} left",
+      "EndsOn": "Until {date}",
+      "StartsIn": "in {duration}",
+      "PeakOn": "On {date}",
+      "PeakIn": {
+        "moon": "Full moon in {duration}",
+        "realm": "Dominant in {duration}"
+      }
+    },
+    "Hero": {
+      "Rank": "Rank {rank}",
+      "RankShort": "R{rank}",
+      "Blessed": "Blessed: rank {rank} instead of {base}",
+      "BlessingLeft": "{remaining} left"
+    },
+    "Alert": {
+      "Peak": {
+        "moon": "{name} is full.",
+        "realm": "{name} is dominant."
+      },
+      "Change": "{name}: {phase}.",
+      "Heroes": "Attuned: {names}."
+    },
+    "SETTINGS": {
+      "uiLanguage": {
+        "name": "Module language",
+        "hint": "Language of the Lunar Almanac for you. Follow Foundry uses Foundry's language."
+      },
+      "phaseAlert": {
+        "name": "Phase notifications",
+        "hint": "Which phase changes you are told about when the world time moves on.",
+        "peak": "Full moons and dominant realms",
+        "attuned": "Every change of a moon or realm a hero is attuned to",
+        "all": "Every phase change",
+        "off": "None"
+      },
+      "chatAlert": {
+        "name": "Full moons in the chat",
+        "hint": "The GM's client posts a chat message for everyone when a moon becomes full or a realm becomes dominant."
+      },
+      "timelineDays": {
+        "name": "Timeline length",
+        "hint": "How many days the timeline of the almanac shows. 0 hides it."
+      },
+      "calendarButton": {
+        "name": "Button in Ember's calendar",
+        "hint": "A moon button next to the cosmos button of Ember's calendar opens the almanac."
+      },
+      "controlButton": {
+        "name": "Button in the token controls",
+        "hint": "Adds the almanac to the token tools on the left."
+      }
+    },
+    "SELFTEST": {
+      "Title": "Lunar Almanac self test",
+      "Run": "Run self test",
+      "Hint": "Checks the parts of Ember that the almanac reads. Run it after an Ember or Foundry update.",
+      "Started": "Lunar Almanac self test running …",
+      "Passed": "Self test passed: {checks} checks, {moons} moons, {realms} realms, {heroes} attuned heroes.",
+      "Problems": "Self test: {problems} of {checks} checks failed. See the chat message.",
+      "Version": "{id} {current} (verified {tested})",
+      "NewVersions": "The Lunar Almanac was verified with older versions than {versions}. Run the self test in the module settings to check that everything still works.",
+      "EmberInactive": "The Ember module is not active.",
+      "NoCalendar": "Ember's calendar is not ready (the Ember adventure scenes are missing or Ember failed to start).",
+      "MoonCount": "Ember's calendar has {count} moons instead of 6.",
+      "RealmCount": "Ember's calendar has {count} inner realms instead of 3.",
+      "Units": "The time units of the calendar could not be read.",
+      "Phase": "The phase of {name} could not be computed.",
+      "Forecast": "The next phase change of {name} could not be found.",
+      "Image": "The image of {name} could not be loaded: {src}",
+      "Attunements": "Ember's attunement options are missing.",
+      "Rank": "Ember's attunement rank function is missing, ranks are not shown.",
+      "Heroes": "None of the player characters has an Ember attunement."
+    }
+  }
+}

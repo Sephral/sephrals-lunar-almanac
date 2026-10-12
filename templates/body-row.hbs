@@ -1,0 +1,23 @@
+<li class="sla-row {{phase}} {{#if isPeak}}peak{{/if}} {{#if highlight}}sla-highlight{{/if}}" data-body-id="{{id}}"
+    style="--sla-color: {{color}}">
+  <div class="sla-icon">
+    {{#if img}}<img src="{{img}}" alt="" loading="lazy" onerror="this.remove()">{{/if}}
+  </div>
+  <div class="sla-info">
+    <div class="sla-line">
+      <strong class="sla-name">{{name}}</strong>
+      <span class="sla-phase">{{phaseLabel}}</span>
+      <span class="sla-status">{{status}}</span>
+    </div>
+    <div class="sla-influence" data-tooltip="{{localize "SLA.Almanac.Influence" value=influence}}">
+      <span style="width: {{influence}}%"></span>
+    </div>
+    <div class="sla-line sla-sub">
+      {{#if next}}<span class="sla-next" {{#if nextTooltip}}data-tooltip="{{nextTooltip}}"{{/if}}>{{next}}</span>
+      {{else if nextTooltip}}<span class="sla-next">{{nextTooltip}}</span>{{/if}}
+      {{#if heroes.length}}
+      <div class="sla-heroes">{{#each heroes}}{{> "modules/sephrals-lunar-almanac/templates/hero-chip.hbs"}}{{/each}}</div>
+      {{/if}}
+    </div>
+  </div>
+</li>

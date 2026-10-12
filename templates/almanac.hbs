@@ -1,0 +1,72 @@
+<div class="sla-body">
+  {{#unless ready}}
+  <p class="sla-empty">{{notReady}}</p>
+  {{else}}
+
+  <header class="sla-head">
+    {{#if date}}<span class="sla-date"><i class="fa-solid fa-calendar-day" inert></i> {{date}}</span>{{/if}}
+    {{#if canOpenCosmos}}
+    <button type="button" class="sla-cosmos" data-action="openCosmos" data-tooltip="SLA.Almanac.Cosmos">
+      <i class="fa-solid fa-moon-over-sun" inert></i>
+    </button>
+    {{/if}}
+  </header>
+
+  <section class="sla-section">
+    <h3>{{localize "SLA.Almanac.Moons"}}</h3>
+    <ol class="sla-bodies plain">
+      {{#each moons}}{{> "modules/sephrals-lunar-almanac/templates/body-row.hbs"}}{{/each}}
+    </ol>
+  </section>
+
+  {{#if showTimeline}}
+  <section class="sla-section sla-timeline-section">
+    <h3>{{localize "SLA.Almanac.Timeline" days=timeline.days}}</h3>
+    <div class="sla-timeline">
+      <div class="sla-ticks">
+        {{#each timeline.ticks}}
+        <span class="sla-tick {{#if week}}week{{/if}}" style="left: {{left}}%">{{#if label}}<span>{{label}}</span>{{/if}}</span>
+        {{/each}}
+      </div>
+      {{#each timeline.rows}}
+      <div class="sla-track" style="--sla-color: {{color}}">
+        <span class="sla-track-name">{{name}}</span>
+        <div class="sla-track-bar">
+          {{#each segments}}
+          <span class="sla-segment {{phase}}" style="left: {{left}}%; width: {{width}}%" data-tooltip-html="{{tooltip}}"></span>
+          {{/each}}
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    <p class="sla-legend">
+      <span class="sla-key waxing"></span>{{localize "SLA.Phase.waxing"}}
+      <span class="sla-key full"></span>{{localize "SLA.Phase.full"}}
+      <span class="sla-key waning"></span>{{localize "SLA.Phase.waning"}}
+    </p>
+  </section>
+  {{/if}}
+
+  {{#if realms.length}}
+  <section class="sla-section">
+    <h3>{{localize "SLA.Almanac.Realms"}}</h3>
+    <ol class="sla-bodies realms plain">
+      {{#each realms}}{{> "modules/sephrals-lunar-almanac/templates/body-row.hbs"}}{{/each}}
+    </ol>
+  </section>
+  {{/if}}
+
+  {{#if unbound.length}}
+  <section class="sla-section">
+    <h3>{{localize "SLA.Almanac.Unbound"}}</h3>
+    {{#each unbound}}
+    <div class="sla-unbound">
+      <span class="sla-unbound-label">{{label}}</span>
+      <div class="sla-heroes">{{#each heroes}}{{> "modules/sephrals-lunar-almanac/templates/hero-chip.hbs"}}{{/each}}</div>
+    </div>
+    {{/each}}
+  </section>
+  {{/if}}
+
+  {{/unless}}
+</div>
