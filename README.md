@@ -20,7 +20,7 @@ The demo uses an invented sky with its own names, colors and moon images and her
 * **Timeline:** the coming 30 days (adjustable) as a strip per moon, so you see at once when two moons are full together.
 * **Inner realms:** the slow realms with their phase and the time until they become dominant.
 * **Attuned heroes:** each moon and realm lists the player characters attuned to it, with their attunement rank. A blessed hero glows golden and the tooltip shows the blessed rank and how long the blessing lasts. Click a hero to open the sheet.
-* **Phase notifications:** when the world time moves on, everyone learns which moon became full, or about every phase change, or only about the moons of their heroes. The GM can also post full moons to the chat.
+* **Phase notifications:** when the world time moves on, everyone learns which moon became full, or about every phase change, or only about the moons of their heroes. After a long rest or a journey a single notification lists the phases that came and went in between, such as a full moon, with their dates. The GM can also post full moons to the chat.
 * **Always the true sky:** the almanac computes every phase for the current world time with Ember's own orbit, so the moving calendar animation never confuses it.
 * **English and German:** the module language follows Foundry or can be set per user.
 

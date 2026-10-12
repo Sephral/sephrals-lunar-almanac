@@ -43,13 +43,14 @@ test("every key used by scripts and templates exists", async () => {
     used.add(`SLA.SETTINGS.${key}.hint`);
   }
   for ( const key of ["EmberInactive", "NoCalendar", "MoonCount", "RealmCount", "Units", "Phase", "Forecast", "Image",
-    "Attunements", "Rank", "Heroes"] ) used.add(`SLA.SELFTEST.${key}`);
+    "Attunements", "BodyAttunements", "Rank", "Heroes"] ) used.add(`SLA.SELFTEST.${key}`);
   for ( const phase of ["none", "waxing", "full", "waning", "dormant", "ascending", "dominant", "descending"] ) {
     used.add(`SLA.Phase.${phase}`);
   }
   for ( const kind of ["moon", "realm"] ) {
     used.add(`SLA.Almanac.PeakIn.${kind}`);
     used.add(`SLA.Alert.Peak.${kind}`);
+    used.add(`SLA.Alert.WasPeak.${kind}`);
   }
   const missing = [...used].filter(key => !enKeys.has(key));
   assert.deepEqual(missing, []);

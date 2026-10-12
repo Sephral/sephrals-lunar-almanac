@@ -54,7 +54,14 @@
         "realm": "{name} ist dominant."
       },
       "Change": "{name}: {phase}.",
-      "Heroes": "Attunement: {names}."
+      "Heroes": "Attunement: {names}.",
+      "Meanwhile": "Während die Zeit verging:",
+      "WasPeak": {
+        "moon": "{name} war von {start} bis {end} voll.",
+        "realm": "{name} war von {start} bis {end} dominant."
+      },
+      "WasPhase": "{name}: {phase} von {start} bis {end}.",
+      "Earlier": "Dazu {count} weitere davor."
     },
     "SETTINGS": {
       "uiLanguage": {
@@ -104,6 +111,7 @@
       "Forecast": "Der nächste Phasenwechsel von {name} ließ sich nicht finden.",
       "Image": "Das Bild von {name} ließ sich nicht laden: {src}",
       "Attunements": "Embers Attunement-Optionen fehlen.",
+      "BodyAttunements": "Kein Ember-Attunement passt zu {names}. Der Almanach kann die Helden mit diesem Attunement nicht zeigen.",
       "Rank": "Embers Funktion für den Attunement-Rang fehlt, Ränge werden nicht angezeigt.",
       "Heroes": "Keiner der Spielercharaktere hat ein Ember-Attunement."
     }

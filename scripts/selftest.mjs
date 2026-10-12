@@ -6,7 +6,9 @@
 
 import {MODULE_ID, TESTED_VERSIONS} from "./config.mjs";
 import {MOON_PHASES, REALM_PHASES} from "./lunar.mjs";
-import {bodyImage, calendarUnits, emberReady, forecastBody, heroAttunement, partyHeroes, skyBodies} from "./sky.mjs";
+import {
+  attunementIds, bodyImage, calendarUnits, emberReady, forecastBody, heroAttunement, partyHeroes, skyBodies
+} from "./sky.mjs";
 
 /**
  * Can an image be loaded?
@@ -68,9 +70,13 @@ async function checkIntegrations() {
     check(!!src && await canLoad(src), "Image", {name: body.name ?? body.id, src});
   }
 
-  // Attunements
+  // Attunements: each moon and realm needs its own, the other ones are listed as unbound
   const C = globalThis.ember.CONST;
-  check(!!C?.ATTUNEMENTS && !!C?.ATTUNEMENT_IDENTIFIERS, "Attunements");
+  if ( check(!!C?.ATTUNEMENTS && !!C?.ATTUNEMENT_IDENTIFIERS, "Attunements") ) {
+    const ids = new Set(attunementIds());
+    const unmatched = bodies.filter(({body}) => !ids.has(body.id)).map(({body}) => body.name ?? body.id);
+    check(!unmatched.length, "BodyAttunements", {names: unmatched.join(", ")});
+  }
   check(typeof globalThis.ember.api?.systems?.attunement?.getEffectiveAttunementRank === "function", "Rank");
   const heroes = partyHeroes();
   const attuned = heroes.filter(a => heroAttunement(a));

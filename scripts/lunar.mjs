@@ -100,6 +100,38 @@ export function phaseSegments(sample, from, to, step, precision=60) {
   return segments;
 }
 
+/**
+ * The phases a body entered after one time up to another, in (from, to]. The last one still runs at `to`; the others
+ * ended in between, for example the full moons of a long rest.
+ * @param {(time: number) => string} sample
+ * @param {number} from
+ * @param {number} to
+ * @param {number} step
+ * @param {number} [precision=60]
+ * @returns {{phase: string, start: number, end: number, current: boolean}[]}
+ */
+export function phaseStarts(sample, from, to, step, precision=60) {
+  if ( !(to > from) ) return [];
+  const segments = phaseSegments(sample, from, to, step, precision);
+  // A change found right at the end yields no segment of its own
+  const last = segments.at(-1);
+  const final = sample(to);
+  if ( last && (last.phase !== final) ) segments.push({phase: final, start: last.end, end: to});
+  return segments.slice(1).map((s, i, entered) => ({...s, current: i === entered.length - 1}));
+}
+
+/**
+ * The latest entries of a list in time order, and how many earlier ones are left out.
+ * @template T
+ * @param {T[]} items
+ * @param {number} max
+ * @returns {{shown: T[], hidden: number}}
+ */
+export function keepLatest(items, max) {
+  const hidden = Math.max(items.length - max, 0);
+  return {shown: items.slice(hidden), hidden};
+}
+
 /* -------------------------------------------- */
 
 /**

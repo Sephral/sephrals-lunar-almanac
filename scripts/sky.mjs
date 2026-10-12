@@ -11,6 +11,9 @@ import {PEAK_PHASE, findChange, nextStart} from "./lunar.mjs";
 /** Images Ember's calendar uses for its moons, by moon id. */
 const MOON_IMAGE = id => `modules/ember/ui/calendar/moon-${id}.webp`;
 
+/** Attunements without a body in the sky, for when Ember's attunement options or calendar cannot be read. */
+const UNBOUND_FALLBACK = ["heart", "abyss"];
+
 /* -------------------------------------------- */
 
 /**
@@ -42,14 +45,14 @@ export async function waitForEmber() {
 
 /**
  * The time units of the calendar.
- * @returns {{secondsPerDay: number, secondsPerHour: number, secondsPerMinute: number}}
+ * @returns {{secondsPerDay: number, secondsPerHour: number, secondsPerMinute: number, daysPerYear: number}}
  */
 export function calendarUnits() {
   const days = globalThis.ember?.calendar?.days ?? game.time.calendar?.days ?? {};
   const secondsPerMinute = days.secondsPerMinute || 60;
   const secondsPerHour = secondsPerMinute * (days.minutesPerHour || 60);
   const secondsPerDay = days.secondsPerDay || (secondsPerHour * (days.hoursPerDay || 24));
-  return {secondsPerDay, secondsPerHour, secondsPerMinute};
+  return {secondsPerDay, secondsPerHour, secondsPerMinute, daysPerYear: days.daysPerYear || 365};
 }
 
 /**
@@ -271,4 +274,23 @@ export function heroesByAttunement() {
     map.get(attunement.id).push(attunement);
   }
   return map;
+}
+
+/**
+ * The ids of Ember's attunement options.
+ * @returns {string[]}
+ */
+export function attunementIds() {
+  return Object.entries(globalThis.ember?.CONST?.ATTUNEMENTS ?? {}).map(([key, option]) => option?.id ?? key);
+}
+
+/**
+ * The attunements without a moon or inner realm: Ember's attunement options minus the bodies of its calendar.
+ * @returns {string[]}
+ */
+export function unboundAttunements() {
+  const ids = attunementIds();
+  const bodies = new Set(skyBodies().map(({body}) => body.id));
+  if ( !ids.length || !bodies.size ) return [...UNBOUND_FALLBACK];
+  return ids.filter(id => !bodies.has(id));
 }

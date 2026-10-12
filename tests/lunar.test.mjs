@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {dayStarts, findChange, nextStart, phaseSegments, spanPercent, splitDuration} from "../scripts/lunar.mjs";
+import {
+  dayStarts, findChange, keepLatest, nextStart, phaseSegments, phaseStarts, spanPercent, splitDuration
+} from "../scripts/lunar.mjs";
 
 const DAY = 86400;
 const HOUR = 3600;
@@ -49,6 +51,48 @@ test("segments cover the range without gaps", () => {
   assert.equal(segments[0].start, 0);
   assert.equal(segments.at(-1).end, 30 * DAY);
   for ( let i = 1; i < segments.length; i++ ) assert.equal(segments[i].start, segments[i - 1].end);
+});
+
+test("a short step enters at most the next phase", () => {
+  assert.deepEqual(phaseStarts(moon, 0, 3 * DAY, 2 * HOUR), []);
+  const entered = phaseStarts(moon, 6 * DAY, 8 * DAY, 2 * HOUR, 60);
+  assert.deepEqual(entered.map(s => [s.phase, s.current]), [["waxing", true]]);
+  assert.ok(Math.abs(entered[0].start - (7 * DAY)) <= 60);
+  // Steps back in time or of no length enter nothing
+  assert.deepEqual(phaseStarts(moon, 8 * DAY, 6 * DAY, 2 * HOUR), []);
+  assert.deepEqual(phaseStarts(moon, 8 * DAY, 8 * DAY, 2 * HOUR), []);
+});
+
+test("a change right at the end of a step still counts", () => {
+  // Six seconds of a combat round across the start of the waxing phase
+  const entered = phaseStarts(moon, (7 * DAY) - 3, (7 * DAY) + 3, 2 * HOUR, 60);
+  assert.deepEqual(entered.map(s => [s.phase, s.current]), [["waxing", true]]);
+  assert.equal(entered[0].start, (7 * DAY) + 3);
+});
+
+test("a jump in time lists the phases that came and went", () => {
+  // A rest of 20 days skips the full moon; the net change only says "waning"
+  const entered = phaseStarts(moon, 0, 20 * DAY, 2 * HOUR, 60);
+  assert.deepEqual(entered.map(s => [s.phase, s.current]), [["waxing", false], ["full", false], ["waning", true]]);
+  const full = entered[1];
+  assert.ok(Math.abs(full.start - (12.25 * DAY)) <= 60);
+  assert.ok(Math.abs(full.end - (15.75 * DAY)) <= 60);
+  assert.equal(entered[2].start, full.end);
+  assert.equal(entered[2].end, 20 * DAY);
+});
+
+test("a jump of a whole cycle ends in the same phase but still lists the full moon", () => {
+  const entered = phaseStarts(moon, 0, 28 * DAY, 2 * HOUR, 60);
+  assert.equal(moon(0), moon(28 * DAY));
+  assert.deepEqual(entered.map(s => s.phase), ["waxing", "full", "waning", "none"]);
+  assert.deepEqual(entered.map(s => s.current), [false, false, false, true]);
+});
+
+test("keepLatest keeps the latest entries and counts the earlier ones", () => {
+  const items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  assert.deepEqual(keepLatest(items, 6), {shown: [5, 6, 7, 8, 9, 10], hidden: 4});
+  assert.deepEqual(keepLatest([1, 2], 6), {shown: [1, 2], hidden: 0});
+  assert.deepEqual(keepLatest([], 6), {shown: [], hidden: 0});
 });
 
 test("durations split into calendar units", () => {

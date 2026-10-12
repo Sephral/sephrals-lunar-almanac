@@ -54,7 +54,14 @@
         "realm": "{name} is dominant."
       },
       "Change": "{name}: {phase}.",
-      "Heroes": "Attuned: {names}."
+      "Heroes": "Attuned: {names}.",
+      "Meanwhile": "While time passed:",
+      "WasPeak": {
+        "moon": "{name} was full from {start} to {end}.",
+        "realm": "{name} was dominant from {start} to {end}."
+      },
+      "WasPhase": "{name}: {phase} from {start} to {end}.",
+      "Earlier": "And {count} more before that."
     },
     "SETTINGS": {
       "uiLanguage": {
@@ -104,6 +111,7 @@
       "Forecast": "The next phase change of {name} could not be found.",
       "Image": "The image of {name} could not be loaded: {src}",
       "Attunements": "Ember's attunement options are missing.",
+      "BodyAttunements": "No Ember attunement matches {names}. The almanac cannot show the heroes attuned to them.",
       "Rank": "Ember's attunement rank function is missing, ranks are not shown.",
       "Heroes": "None of the player characters has an Ember attunement."
     }

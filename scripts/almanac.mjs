@@ -7,13 +7,10 @@ import {TEMPLATES, setting} from "./config.mjs";
 import {PEAK_PHASE, dayStarts, phaseSegments, spanPercent, splitDuration} from "./lunar.mjs";
 import {
   bodyColor, bodyImage, bodyName, calendarUnits, emberReady, forecastBody, formatDate, heroesByAttunement,
-  scanSettings, secondsIntoDay, skyBodies
+  scanSettings, secondsIntoDay, skyBodies, unboundAttunements
 } from "./sky.mjs";
 
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
-
-/** Attunements without a body in the sky. */
-const UNBOUND_ATTUNEMENTS = ["heart", "abyss"];
 
 /* -------------------------------------------- */
 
@@ -133,7 +130,7 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
     const rows = skyBodies().map(entry => this.#prepareBody(entry, now, heroes));
     context.moons = rows.filter(r => r.kind === "moon");
     context.realms = rows.filter(r => r.kind === "realm");
-    context.unbound = UNBOUND_ATTUNEMENTS.filter(id => heroes.get(id)?.length).map(id => ({
+    context.unbound = unboundAttunements().filter(id => heroes.get(id)?.length).map(id => ({
       label: bodyName(id),
       heroes: heroes.get(id).map(h => this.#prepareHero(h))
     }));
