@@ -32,12 +32,111 @@
   opacity: 0.85;
 }
 
-.sla-almanac .sla-cosmos {
+.sla-almanac .sla-date.preview {
+  color: var(--color-warm-2, #ee9b3a);
+  opacity: 1;
+}
+
+.sla-almanac .sla-icon-button {
   flex: 0 0 auto;
   width: 28px;
   height: 28px;
-  margin-left: auto;
   padding: 0;
+}
+
+/* Date control */
+.sla-almanac .sla-lookahead {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.sla-almanac .sla-lookahead button {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0 4px;
+  font-size: var(--font-size-12);
+}
+
+.sla-almanac .sla-lookahead input[type="number"] {
+  width: 52px;
+  height: 24px;
+  text-align: center;
+}
+
+.sla-almanac .sla-preview-note {
+  margin: -4px 0 0;
+  font-size: var(--font-size-12);
+  font-style: italic;
+  opacity: 0.85;
+}
+
+/* ---------------------------------------- */
+/* Weather                                  */
+/* ---------------------------------------- */
+
+.sla-almanac .sla-weather {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgb(0 0 0 / 0.12);
+  font-size: var(--font-size-12);
+}
+
+.sla-almanac .sla-weather-label {
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.8;
+}
+
+.sla-almanac .sla-weather-event,
+.sla-almanac .sla-wind {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sla-almanac .sla-weather-event {
+  border-bottom: 2px solid var(--sla-weather-color, transparent);
+}
+
+.sla-almanac .sla-weather-event img {
+  width: 18px;
+  height: 18px;
+  border: none;
+  object-fit: contain;
+}
+
+.sla-almanac .sla-wind-forecast {
+  display: flex;
+  flex: 1 0 100%;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  margin: 0;
+  padding: 0;
+  opacity: 0.85;
+}
+
+.sla-almanac .sla-wind-forecast li {
+  white-space: nowrap;
+}
+
+.sla-almanac .sla-forecast-head {
+  font-style: italic;
+  cursor: help;
+}
+
+.sla-almanac .sla-when {
+  opacity: 0.75;
 }
 
 .sla-almanac h3 {
@@ -157,15 +256,24 @@
 }
 
 .sla-almanac .sla-influence {
+  position: relative;
   height: 4px;
   border-radius: 2px;
   background: rgb(255 255 255 / 0.08);
-  overflow: hidden;
+  cursor: help;
+}
+
+/* A taller area to hover than the thin bar */
+.sla-almanac .sla-influence::before {
+  position: absolute;
+  inset: -4px 0;
+  content: "";
 }
 
 .sla-almanac .sla-influence span {
   display: block;
   height: 100%;
+  border-radius: 2px;
   background: var(--sla-color);
 }
 
@@ -225,9 +333,24 @@
   box-shadow: 0 0 6px rgb(232 196 106 / 0.6);
 }
 
-.sla-almanac .sla-hero.blessed i {
+.sla-almanac .sla-hero.blessed i.fa-sparkles {
   color: #e8c46a;
   font-size: 10px;
+}
+
+.sla-almanac .sla-hero .sla-gear {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+.sla-almanac .sla-hero.gear-active {
+  border-color: var(--sla-gear-color, #9ec5ff);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--sla-gear-color, #9ec5ff) 70%, transparent);
+}
+
+.sla-almanac .sla-hero.gear-active .sla-gear {
+  color: color-mix(in srgb, var(--sla-gear-color, #9ec5ff) 70%, white);
+  opacity: 1;
 }
 
 .sla-almanac .sla-unbound {
@@ -306,17 +429,20 @@
   cursor: help;
 }
 
-.sla-almanac .sla-segment.waxing {
+.sla-almanac .sla-segment.waxing,
+.sla-almanac .sla-segment.ascending {
   background: linear-gradient(to right, color-mix(in srgb, var(--sla-color) 15%, transparent),
     color-mix(in srgb, var(--sla-color) 55%, transparent));
 }
 
-.sla-almanac .sla-segment.waning {
+.sla-almanac .sla-segment.waning,
+.sla-almanac .sla-segment.descending {
   background: linear-gradient(to right, color-mix(in srgb, var(--sla-color) 55%, transparent),
     color-mix(in srgb, var(--sla-color) 15%, transparent));
 }
 
-.sla-almanac .sla-segment.full {
+.sla-almanac .sla-segment.full,
+.sla-almanac .sla-segment.dominant {
   border-radius: 2px;
   box-shadow: 0 0 6px color-mix(in srgb, var(--sla-color) 70%, transparent);
 }
@@ -339,11 +465,13 @@
   background: #bbb;
 }
 
-.sla-almanac .sla-key.waxing {
+.sla-almanac .sla-key.waxing,
+.sla-almanac .sla-key.ascending {
   background: linear-gradient(to right, rgb(187 187 187 / 0.15), rgb(187 187 187 / 0.55));
 }
 
-.sla-almanac .sla-key.waning {
+.sla-almanac .sla-key.waning,
+.sla-almanac .sla-key.descending {
   background: linear-gradient(to right, rgb(187 187 187 / 0.55), rgb(187 187 187 / 0.15));
 }
 
@@ -365,6 +493,25 @@
 .sla-almanac.theme-light .sla-hero {
   background: rgb(255 255 255 / 0.7);
   border-color: rgb(0 0 0 / 0.15);
+}
+
+.theme-light .sla-almanac .sla-weather,
+.sla-almanac.theme-light .sla-weather {
+  background: rgb(255 255 255 / 0.5);
+}
+
+/* Dialog which marks the moons of an item */
+.sla-gear-dialog .sla-moon-choice {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 12px;
+  margin: 6px 0;
+}
+
+.sla-gear-dialog .sla-moon-choice label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* Chat message of a full moon */

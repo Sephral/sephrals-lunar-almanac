@@ -53,7 +53,10 @@ test("every setting is registered with its scope, default and choices", () => {
     uiLanguage: ["client", FOLLOW_FOUNDRY, true, [FOLLOW_FOUNDRY, "de", "en"]],
     phaseAlert: ["client", "peak", true, ["peak", "attuned", "all", "off"]],
     chatAlert: ["world", false, true, null],
+    heroSource: ["world", "party", true, ["party", "all"]],
     timelineDays: ["client", 30, true, null],
+    realmTimelineDays: ["client", 180, true, null],
+    showWeather: ["client", true, true, null],
     calendarButton: ["client", true, true, null],
     controlButton: ["client", true, true, null],
     acknowledgedVersions: ["client", "", false, null]
@@ -64,11 +67,14 @@ test("every setting is registered with its scope, default and choices", () => {
   }
 });
 
-test("the timeline length is a number field with a range", () => {
+test("the timeline lengths are number fields with a range", () => {
   const {settings} = register();
   const {type} = settings.get("timelineDays");
   assert.ok(type instanceof foundry.data.fields.NumberField);
   assert.deepEqual(type.options, {min: 0, max: 60, step: 1, initial: 30});
+  const realms = settings.get("realmTimelineDays").type;
+  assert.ok(realms instanceof foundry.data.fields.NumberField);
+  assert.deepEqual(realms.options, {min: 0, max: 360, step: 30, initial: 180});
 });
 
 test("the self test is a GM menu backed by an application class", () => {

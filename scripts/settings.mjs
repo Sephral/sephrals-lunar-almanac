@@ -31,8 +31,13 @@ export const SETTINGS = {
     peak: "SLA.SETTINGS.phaseAlert.peak", attuned: "SLA.SETTINGS.phaseAlert.attuned",
     all: "SLA.SETTINGS.phaseAlert.all", off: "SLA.SETTINGS.phaseAlert.off"}},
   chatAlert: {type: Boolean, default: false},
+  heroSource: {type: String, default: "party", onChange: () => refreshAlmanac(), choices: {
+    party: "SLA.SETTINGS.heroSource.party", all: "SLA.SETTINGS.heroSource.all"}},
   timelineDays: {type: Number, default: 30, scope: "client", range: {min: 0, max: 60, step: 1},
     onChange: () => refreshAlmanac()},
+  realmTimelineDays: {type: Number, default: 180, scope: "client", range: {min: 0, max: 360, step: 30},
+    onChange: () => refreshAlmanac()},
+  showWeather: {type: Boolean, default: true, scope: "client", onChange: () => refreshAlmanac()},
   calendarButton: {type: Boolean, default: true, scope: "client", onChange: () => refreshButtons()},
   controlButton: {type: Boolean, default: true, scope: "client", onChange: () => refreshButtons()}
 };

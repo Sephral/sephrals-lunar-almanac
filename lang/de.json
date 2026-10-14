@@ -30,6 +30,7 @@
       "Realms": "Innere Reiche",
       "Unbound": "Weitere Attunements",
       "Timeline": "Die nächsten {days} Tage",
+      "TimelineOne": "Der nächste Tag",
       "DayMark": "+{days} T",
       "Cosmos": "Kosmoskarte zeigen",
       "Influence": "Einfluss {value} %",
@@ -40,12 +41,14 @@
       "PeakIn": {
         "moon": "Vollmond in {duration}",
         "realm": "Dominant in {duration}"
-      }
+      },
+      "RealmTimeline": "Innere Reiche, die nächsten {days} Tage"
     },
     "Hero": {
       "Rank": "Rang {rank}",
       "RankShort": "R{rank}",
       "Blessed": "Gesegnet: Rang {rank} statt {base}",
+      "BlessedSameRank": "Gesegnet, weiterhin Rang {rank}",
       "BlessingLeft": "noch {remaining}"
     },
     "Alert": {
@@ -62,6 +65,67 @@
       },
       "WasPhase": "{name}: {phase} von {start} bis {end}.",
       "Earlier": "Dazu {count} weitere davor."
+    },
+    "LookAhead": {
+      "Back": "Einen Tag zurück",
+      "Forward": "Einen Tag voraus",
+      "Offset": "Tage ab heute. Die Weltzeit ändert sich nicht.",
+      "Today": "Heute",
+      "TodayHint": "Zurück zur aktuellen Weltzeit",
+      "Ahead": "Vorschau: {days} T voraus. Die Weltzeit bleibt, wie sie ist.",
+      "Behind": "Rückblick: vor {days} T. Die Weltzeit bleibt, wie sie ist."
+    },
+    "Influence": {
+      "Meaning": {
+        "moon": "Wie stark {name} gerade auf die Welt wirkt. Der Wert steigt bis 100 % auf dem Höhepunkt des Vollmonds und liegt bei 0 %, solange der Mond ruht.",
+        "realm": "Wie stark {name} gerade auf die Welt wirkt. Der Wert steigt bis 100 % auf dem Höhepunkt der Dominanz und liegt bei 0 %, solange das Reich ruht."
+      },
+      "Peak": {
+        "moon": "Ab {value} % ist der Mond voll.",
+        "realm": "Ab {value} % ist das Reich dominant."
+      },
+      "Effects": "Ember färbt damit das Mondlicht und gewichtet Wetter und Zufallsereignisse."
+    },
+    "Gear": {
+      "Title": "Mondabhängige Ausrüstung",
+      "Full": "{name} (voll)",
+      "Mark": "Hängt von Monden ab",
+      "MarkTitle": "Von welchen Monden hängt es ab?",
+      "MarkHint": "Der Mondalmanach zeigt {name} bei seinem Helden und hebt es hervor, solange einer dieser Monde voll ist. Gegenstände, deren Wirkung Ember schon an die Monde bindet, findet er auch ohne Markierung."
+    },
+    "Dialog": {
+      "Save": "Speichern",
+      "Cancel": "Abbrechen"
+    },
+    "Weather": {
+      "Title": "Wetter",
+      "Clear": "Klar",
+      "Wind": "{label}, {speed} mph",
+      "WindSpeed": "Wind {speed} mph",
+      "Forecast": "Kommender Wind",
+      "ForecastHint": "Nur für dich sichtbar. Ember plant den Wind bis zu zwei Tage im Voraus. Regen, Nebel und anderes Wetter ziehen mit dem Wind und lassen sich nicht vorhersagen."
+    },
+    "Export": {
+      "Button": "Kommende Vollmonde ins Journal schreiben",
+      "Title": "Vollmonde ins Journal",
+      "Hint": "Schreibt alle Vollmonde und dominanten Reiche ab {date} in einen Journaleintrag, den nur die Spielleitung sieht.",
+      "Days": "Tage voraus",
+      "Realms": "Innere Reiche mit aufnehmen",
+      "Update": "Der Eintrag {name} wird aktualisiert.",
+      "Write": "Schreiben",
+      "EntryName": "Mondalmanach",
+      "PageName": "Vollmonde und dominante Reiche",
+      "Range": "Von {from} bis {to}.",
+      "Nothing": "In dieser Zeit ist kein Mond voll und kein Reich dominant.",
+      "Done": "In den Journaleintrag {name} geschrieben.",
+      "Column": {
+        "Start": "Beginn",
+        "End": "Ende",
+        "Body": "Mond oder Reich",
+        "Phase": "Phase",
+        "Duration": "Dauer",
+        "Heroes": "Helden mit Attunement"
+      }
     },
     "SETTINGS": {
       "uiLanguage": {
@@ -80,9 +144,23 @@
         "name": "Vollmonde im Chat",
         "hint": "Der Client der Spielleitung schreibt eine Chatnachricht für alle, wenn ein Mond voll oder ein Reich dominant wird."
       },
+      "heroSource": {
+        "name": "Helden im Almanach",
+        "hint": "Wessen Attunements und Ausrüstung der Almanach zeigt. Ist im Spielsystem keine Gruppe gesetzt, erscheinen alle Spielercharaktere.",
+        "party": "Mitglieder der Gruppe",
+        "all": "Alle Spielercharaktere"
+      },
       "timelineDays": {
         "name": "Länge der Zeitleiste",
         "hint": "Wie viele Tage die Zeitleiste im Almanach zeigt. 0 blendet sie aus."
+      },
+      "realmTimelineDays": {
+        "name": "Zeitleiste der inneren Reiche",
+        "hint": "Wie viele Tage die Zeitleiste der inneren Reiche zeigt. Die Reiche ändern sich langsam, darum blickt sie weiter voraus. 0 blendet sie aus."
+      },
+      "showWeather": {
+        "name": "Wetter",
+        "hint": "Zeigt Embers Wetter dort, wo die Gruppe ist. Die Spielleitung sieht auch den kommenden Wind."
       },
       "calendarButton": {
         "name": "Knopf in Embers Kalender",
@@ -113,7 +191,9 @@
       "Attunements": "Embers Attunement-Optionen fehlen.",
       "BodyAttunements": "Kein Ember-Attunement passt zu {names}. Der Almanach kann die Helden mit diesem Attunement nicht zeigen.",
       "Rank": "Embers Funktion für den Attunement-Rang fehlt, Ränge werden nicht angezeigt.",
-      "Heroes": "Keiner der Spielercharaktere hat ein Ember-Attunement."
+      "Heroes": "Keiner der Spielercharaktere hat ein Ember-Attunement.",
+      "Weather": "Embers Wetter ließ sich nicht lesen. Der Almanach zeigt kein Wetter.",
+      "GearHooks": "Crucibles Hooks für Gegenstände fehlen. Mondabhängige Ausrüstung wird nur über Markierungen der Spielleitung erkannt."
     }
   }
 }

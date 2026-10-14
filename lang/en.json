@@ -30,6 +30,7 @@
       "Realms": "Inner realms",
       "Unbound": "Other attunements",
       "Timeline": "Next {days} days",
+      "TimelineOne": "The next day",
       "DayMark": "+{days} d",
       "Cosmos": "Show the cosmos map",
       "Influence": "Influence {value}%",
@@ -40,12 +41,14 @@
       "PeakIn": {
         "moon": "Full moon in {duration}",
         "realm": "Dominant in {duration}"
-      }
+      },
+      "RealmTimeline": "Inner realms, next {days} days"
     },
     "Hero": {
       "Rank": "Rank {rank}",
       "RankShort": "R{rank}",
       "Blessed": "Blessed: rank {rank} instead of {base}",
+      "BlessedSameRank": "Blessed, still rank {rank}",
       "BlessingLeft": "{remaining} left"
     },
     "Alert": {
@@ -62,6 +65,67 @@
       },
       "WasPhase": "{name}: {phase} from {start} to {end}.",
       "Earlier": "And {count} more before that."
+    },
+    "LookAhead": {
+      "Back": "One day back",
+      "Forward": "One day ahead",
+      "Offset": "Days from today. The world time does not change.",
+      "Today": "Today",
+      "TodayHint": "Back to the current world time",
+      "Ahead": "Preview: {days} d ahead. The world time stays as it is.",
+      "Behind": "Look back: {days} d ago. The world time stays as it is."
+    },
+    "Influence": {
+      "Meaning": {
+        "moon": "How strongly {name} acts on the world right now. It rises to 100% at the height of the full moon and is 0% while the moon rests.",
+        "realm": "How strongly {name} acts on the world right now. It rises to 100% at the height of its dominance and is 0% while the realm rests."
+      },
+      "Peak": {
+        "moon": "From {value}% on the moon is full.",
+        "realm": "From {value}% on the realm is dominant."
+      },
+      "Effects": "Ember uses it to tint the moonlight and to weigh weather and random events."
+    },
+    "Gear": {
+      "Title": "Moon sensitive gear",
+      "Full": "{name} (full)",
+      "Mark": "Depends on moons",
+      "MarkTitle": "Which moons does it depend on?",
+      "MarkHint": "The Lunar Almanac lists {name} with its hero and highlights it while one of these moons is full. Items whose effect Ember already ties to the moons are found without a mark."
+    },
+    "Dialog": {
+      "Save": "Save",
+      "Cancel": "Cancel"
+    },
+    "Weather": {
+      "Title": "Weather",
+      "Clear": "Clear",
+      "Wind": "{label}, {speed} mph",
+      "WindSpeed": "Wind {speed} mph",
+      "Forecast": "Coming wind",
+      "ForecastHint": "Only you see this. Ember plans the wind up to two days ahead. Rain, fog and other weather drift with the wind and cannot be foreseen."
+    },
+    "Export": {
+      "Button": "Write the coming full moons into a journal",
+      "Title": "Full moons to the journal",
+      "Hint": "Writes every full moon and dominant realm from {date} on into a journal entry only the GM can see.",
+      "Days": "Days ahead",
+      "Realms": "Include the inner realms",
+      "Update": "The entry {name} is updated.",
+      "Write": "Write",
+      "EntryName": "Lunar Almanac",
+      "PageName": "Full moons and dominant realms",
+      "Range": "From {from} to {to}.",
+      "Nothing": "No moon is full and no realm is dominant in this time.",
+      "Done": "Written to the journal entry {name}.",
+      "Column": {
+        "Start": "Start",
+        "End": "End",
+        "Body": "Moon or realm",
+        "Phase": "Phase",
+        "Duration": "Duration",
+        "Heroes": "Attuned heroes"
+      }
     },
     "SETTINGS": {
       "uiLanguage": {
@@ -80,9 +144,23 @@
         "name": "Full moons in the chat",
         "hint": "The GM's client posts a chat message for everyone when a moon becomes full or a realm becomes dominant."
       },
+      "heroSource": {
+        "name": "Heroes in the almanac",
+        "hint": "Whose attunements and gear the almanac shows. Without a party set in the game system, all player characters appear.",
+        "party": "Members of the party",
+        "all": "All player characters"
+      },
       "timelineDays": {
         "name": "Timeline length",
         "hint": "How many days the timeline of the almanac shows. 0 hides it."
+      },
+      "realmTimelineDays": {
+        "name": "Timeline of the inner realms",
+        "hint": "How many days the timeline of the inner realms shows. The realms change slowly, so it looks further ahead. 0 hides it."
+      },
+      "showWeather": {
+        "name": "Weather",
+        "hint": "Shows Ember's weather where the party is. The GM also sees the coming wind."
       },
       "calendarButton": {
         "name": "Button in Ember's calendar",
@@ -113,7 +191,9 @@
       "Attunements": "Ember's attunement options are missing.",
       "BodyAttunements": "No Ember attunement matches {names}. The almanac cannot show the heroes attuned to them.",
       "Rank": "Ember's attunement rank function is missing, ranks are not shown.",
-      "Heroes": "None of the player characters has an Ember attunement."
+      "Heroes": "None of the player characters has an Ember attunement.",
+      "Weather": "Ember's weather could not be read. The almanac shows no weather.",
+      "GearHooks": "Crucible's item hooks are missing. Moon sensitive gear is only found through the GM's marks."
     }
   }
 }

@@ -12,12 +12,14 @@
 
 ## Highlights
 
-* **Every moon at a glance:** phase, influence, how long the phase lasts and when the next full moon comes. Full moons glow.
-* **Plan ahead:** a timeline of the coming 30 days with a strip per moon, so you see at once when two moons are full together.
-* **Inner realms:** their phase and the time until each of them becomes dominant.
-* **Your heroes in the sky:** every moon and realm lists the heroes attuned to it, with their rank. Blessed heroes glow golden. Click a hero to open the sheet.
+* **Every moon at a glance:** phase, influence, how long the phase lasts and when the next full moon comes. Full moons glow, and the inner realms show when each of them becomes dominant.
+* **Plan ahead:** a timeline of the coming 30 days with a strip per moon, so you see at once when two moons are full together. The slow inner realms get a strip of half a year. Step to any other day to see its sky.
+* **Your heroes in the sky:** every moon and realm lists the heroes of your party attuned to it, with their rank. Blessed heroes glow golden. Click a hero to open the sheet.
+* **Gear that answers the moons:** items that react to a moon show a small moon next to their hero and light up while that moon is full. The GM can mark any other item too.
+* **Weather at a glance:** the weather where the party is and the wind, straight from Ember. The GM also sees how the wind will turn.
 * **Never miss a full moon:** when time moves on, everyone learns which moon became full. After a long rest or a journey one message sums up everything that happened in between. The GM can post full moons to the chat as well.
-* **Look, don't touch:** the almanac never changes the time, the moons, the attunements or any actor.
+* **A calendar for the GM:** one click writes the coming full moons and dominant realms into a journal only the GM can see.
+* **Look, don't touch:** the almanac never changes the time, the moons or the attunements.
 
 ## How it works
 
@@ -36,7 +38,7 @@ The almanac needs your copy of the Ember module and contains no Ember content it
 
 ## Learn more
 
-Questions or ideas? Join us on [Discord](https://discord.gg/7BjCgDYaBP). Looking for more? See [all modules by Sephral](https://github.com/Sephral).
+Every setting and the macro API are in the [manual](MANUAL.md). Questions or ideas? Join us on [Discord](https://discord.gg/7BjCgDYaBP). Looking for more? See [all modules by Sephral](https://github.com/Sephral).
 
 ## License
 

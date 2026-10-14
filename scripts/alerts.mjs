@@ -108,6 +108,22 @@ function heroNames(id, heroes) {
 }
 
 /**
+ * The heroes a message for everyone may name: only those every player may see. The almanac and the notifications of
+ * a player leave out the heroes this player may not see, so the chat must not name them either.
+ * @param {Map<string, object[]>} heroes      The heroes by attunement, as the GM sees them
+ * @param {User[]} [players]                  The users who read the message
+ * @returns {Map<string, object[]>}
+ */
+export function publicHeroes(heroes, players=game.users?.filter(u => !u.isGM) ?? []) {
+  const result = new Map();
+  for ( const [id, list] of heroes ) {
+    const shown = list.filter(h => players.every(u => h.actor.testUserPermission(u, "LIMITED")));
+    if ( shown.length ) result.set(id, shown);
+  }
+  return result;
+}
+
+/**
  * The text of a change. A phase which already ended during a jump in time names its dates.
  * @param {{kind: string, body: object, to: string, peak: boolean, passed?: boolean, start?: number, end?: number}} change
  * @param {Map<string, object[]>} heroes
@@ -194,7 +210,7 @@ function postChat(changes, {jump=false}={}) {
   if ( !game.user.isActiveGM || !setting("chatAlert") ) return;
   const peaks = changes.filter(c => c.peak);
   if ( !peaks.length ) return;
-  const heroes = heroesByAttunement();
+  const heroes = publicHeroes(heroesByAttunement());
   const escape = foundry.utils.escapeHTML;
   const texts = jump ? jumpLines(peaks, heroes) : peaks.map(c => changeText(c, heroes));
   const lines = texts.map(t => `<p>${escape(t)}</p>`).join("");

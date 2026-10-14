@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  dayStarts, findChange, keepLatest, nextStart, phaseSegments, phaseStarts, spanPercent, splitDuration
+  clampOffset, dayStarts, findChange, findStart, hookSource, keepLatest, mergeMoons, moonReferences, nextStart,
+  phaseSegments, phaseSpans, phaseStarts, spanPercent, splitDuration, tickPlan, timelineTicks
 } from "../scripts/lunar.mjs";
 
 const DAY = 86400;
@@ -107,4 +108,90 @@ test("timeline positions", () => {
   assert.deepEqual(spanPercent(80, 150, 0, 100), {left: 80, width: 20});
   assert.deepEqual(spanPercent(0, 10, 5, 5), {left: 0, width: 0});
   assert.deepEqual(dayStarts(1000, 1000 + (3 * DAY), 1000, DAY), [DAY, 2 * DAY, 3 * DAY]);
+});
+
+test("finds the start of the current phase by looking back", () => {
+  // Day 13 lies in the full moon of days 12.25 to 15.75
+  const start = findStart(moon, 13 * DAY, 30 * DAY, 2 * HOUR, 60);
+  assert.ok(Math.abs(start - (12.25 * DAY)) <= 60);
+  assert.equal(moon(start), "full");
+  assert.equal(moon(start - 61), "waxing");
+  assert.equal(findStart(moon, 13 * DAY, DAY / 2, 2 * HOUR), null, "the start lies beyond the horizon");
+  assert.equal(findStart(moon, 13 * DAY, 0, HOUR), null);
+});
+
+test("phase spans report the true start and end of periods cut by the range", () => {
+  // From day 13 to day 50: the running full moon and the next one
+  const spans = phaseSpans(moon, "full", 13 * DAY, 50 * DAY, 2 * HOUR, 60, 30 * DAY);
+  assert.equal(spans.length, 2);
+  assert.equal(spans[0].running, true);
+  assert.ok(Math.abs(spans[0].start - (12.25 * DAY)) <= 60);
+  assert.ok(Math.abs(spans[0].end - (15.75 * DAY)) <= 60);
+  assert.equal(spans[1].running, false);
+  assert.ok(Math.abs(spans[1].start - (40.25 * DAY)) <= 60);
+  assert.ok(Math.abs(spans[1].end - (43.75 * DAY)) <= 60);
+  // A range which ends inside a full moon finds its end beyond the range
+  const cut = phaseSpans(moon, "full", 0, 14 * DAY, 2 * HOUR, 60, 30 * DAY);
+  assert.equal(cut.length, 1);
+  assert.ok(Math.abs(cut[0].end - (15.75 * DAY)) <= 60);
+  assert.deepEqual(phaseSpans(moon, "full", 0, 10 * DAY, 2 * HOUR, 60), []);
+});
+
+test("timeline marks get sparser on longer timelines", () => {
+  assert.deepEqual(tickPlan(30), {every: 1, labelEvery: 7});
+  assert.deepEqual(tickPlan(180), {every: 10, labelEvery: 30});
+  assert.deepEqual(tickPlan(360), {every: 30, labelEvery: 60});
+  const daily = timelineTicks(0, 14 * DAY, 0, DAY, tickPlan(14));
+  assert.equal(daily.length, 14);
+  assert.deepEqual(daily.filter(t => t.label).map(t => t.day), [7, 14]);
+  const long = timelineTicks(0, 180 * DAY, 0, DAY, tickPlan(180));
+  assert.deepEqual(long.map(t => t.day), [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180]);
+  assert.deepEqual(long.filter(t => t.label).map(t => t.day), [30, 60, 90, 120, 150, 180]);
+  assert.equal(long[0].time, 10 * DAY);
+});
+
+test("day offsets are whole numbers within limits", () => {
+  assert.equal(clampOffset("12", -360, 720), 12);
+  assert.equal(clampOffset(2.6, -360, 720), 3);
+  assert.equal(clampOffset(-1000, -360, 720), -360);
+  assert.equal(clampOffset(5000, -360, 720), 720);
+  assert.equal(clampOffset("abc", -360, 720), 0);
+  assert.equal(clampOffset(undefined, -360, 720), 0);
+});
+
+test("moon references: code which reads the calendar's moons and the moons it names", () => {
+  const ids = ["aura", "cora", "ragen"];
+  assert.equal(moonReferences("resistances.fire.bonus += 5;", ids), null, "no moons read");
+  assert.equal(moonReferences("const aura = 1;", ids), null, "a name alone is not enough");
+  assert.deepEqual(moonReferences("if ( ember.calendar.moons.cora.phase === 'full' ) x++;", ids), ["cora"]);
+  assert.deepEqual(moonReferences("ember.calendar.moons.ragen.phase; ember.calendar.moons.aura.phase", ids),
+    ["aura", "ragen"]);
+  // A moon picked at runtime depends on every moon
+  assert.deepEqual(moonReferences("const phase = ember.calendar.moons[moonId]?.phase;", ids), ids);
+  // Whole words only: "auras" or "coral" are not moons
+  assert.deepEqual(moonReferences("ember.calendar.moons.cora; auras; coral", ids), ["cora"]);
+});
+
+test("hook source covers functions and the data next to them", () => {
+  const hooks = {
+    _TABLE: Object.freeze({aura: "a", cora: "b"}),
+    prepare(item, out) {
+      for ( const [id] of Object.entries(hooks._TABLE) ) out[id] = ember.calendar.moons[id].phase;
+    },
+    label: "plain"
+  };
+  const source = hookSource(hooks);
+  assert.match(source, /calendar.moons/);
+  assert.match(source, /"aura"/);
+  assert.deepEqual(moonReferences(source, ["aura", "cora", "ragen"]), ["aura", "cora"]);
+  assert.equal(hookSource(null), "");
+  const circular = {};
+  circular.self = circular;
+  assert.equal(hookSource({circular, fn() {}}), "fn() {}");
+});
+
+test("mergeMoons keeps the calendar order and drops unknown ids", () => {
+  const order = ["aura", "cora", "ragen"];
+  assert.deepEqual(mergeMoons(order, ["ragen"], ["aura", "ragen", "gone"], null), ["aura", "ragen"]);
+  assert.deepEqual(mergeMoons(order), []);
 });

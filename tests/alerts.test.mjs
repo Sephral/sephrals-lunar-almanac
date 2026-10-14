@@ -53,7 +53,7 @@ globalThis.foundry = {
   documents: {ChatMessage: {implementation: {create: async data => chats.push(data)}}}
 };
 
-const {initAlerts, onUpdateWorldTime} = await import("../scripts/alerts.mjs");
+const {initAlerts, onUpdateWorldTime, publicHeroes} = await import("../scripts/alerts.mjs");
 
 /**
  * Start at a time, move the world time and collect what was announced.
@@ -127,4 +127,18 @@ test("the notification setting filters the phases of a jump", () => {
   assert.deepEqual(step(0, 20 * DAY, {phaseAlert: "attuned", chatAlert: false}).notes, []);
   // The GM's chat lists the full moon whatever the own notification setting is
   assert.equal(step(0, 20 * DAY, {phaseAlert: "off"}).chats.length, 1);
+});
+
+test("the chat names only the heroes every player may see", () => {
+  const actor = (name, visibleTo) => ({name, testUserPermission: user => visibleTo.includes(user.id)});
+  const players = [{id: "p1"}, {id: "p2"}];
+  const heroes = new Map([
+    ["moonA", [{actor: actor("Shared", ["p1", "p2"])}, {actor: actor("Own", ["p1"])}]],
+    ["moonB", [{actor: actor("Hidden", [])}]]
+  ]);
+  const shown = publicHeroes(heroes, players);
+  assert.deepEqual([...shown.keys()], ["moonA"]);
+  assert.deepEqual(shown.get("moonA").map(h => h.actor.name), ["Shared"]);
+  // Without players everyone may be named
+  assert.equal(publicHeroes(heroes, []).get("moonB").length, 1);
 });

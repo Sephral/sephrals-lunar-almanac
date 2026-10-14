@@ -1,7 +1,9 @@
-<button type="button" class="sla-hero {{#if blessed}}blessed{{/if}}" data-actor-id="{{id}}"
+<button type="button" class="sla-hero {{#if blessed}}blessed{{/if}} {{#if gearActive}}gear-active{{/if}}" data-actor-id="{{id}}"
+        {{#if gearColor}}style="--sla-gear-color: {{gearColor}}"{{/if}}
         {{#if canOpen}}data-action="openActor"{{else}}disabled{{/if}} data-tooltip-html="{{tooltip}}">
   <img src="{{img}}" alt="" loading="lazy">
   <span class="sla-hero-name">{{name}}</span>
   {{#if rank includeZero=true}}<span class="sla-rank">{{localize "SLA.Hero.RankShort" rank=rank}}</span>{{/if}}
+  {{#if gear}}<i class="fa-solid fa-moon sla-gear" inert></i>{{/if}}
   {{#if blessed}}<i class="fa-solid fa-sparkles" inert></i>{{/if}}
 </button>

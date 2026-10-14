@@ -9,6 +9,7 @@ import {MOON_PHASES, REALM_PHASES} from "./lunar.mjs";
 import {
   attunementIds, bodyImage, calendarUnits, emberReady, forecastBody, heroAttunement, partyHeroes, skyBodies
 } from "./sky.mjs";
+import {weatherReport} from "./weather.mjs";
 
 /**
  * Can an image be loaded?
@@ -81,6 +82,16 @@ async function checkIntegrations() {
   const heroes = partyHeroes();
   const attuned = heroes.filter(a => heroAttunement(a));
   check(!heroes.length || attuned.length, "Heroes");
+
+  // Weather where the party is, and Crucible's item hooks for moon sensitive gear
+  let weather = null;
+  try {
+    weather = weatherReport(game.time.worldTime);
+  } catch(err) {
+    console.error(err);
+  }
+  check(!!weather, "Weather");
+  if ( game.system.id === "crucible" ) check(!!globalThis.crucible?.api?.hooks, "GearHooks");
   return {problems, checks, moons: moons.length, realms: realms.length, heroes: attuned.length};
 }
 

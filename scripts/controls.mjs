@@ -57,7 +57,8 @@ export function onRenderEmberCalendar(app, element) {
  * Redraw the places which show a button after a setting changed.
  */
 export function refreshButtons() {
-  ui.controls?.render();
+  // Only a reset asks the getSceneControlButtons hook for the tools again
+  ui.controls?.render({reset: true});
   const calendar = globalThis.ember?.ui?.calendar;
   if ( calendar?.rendered ) onRenderEmberCalendar(calendar, calendar.element);
 }

@@ -1,16 +1,29 @@
 /**
  * The almanac window: Ember's six moons and three inner realms with their phase, how long it lasts and when the next
- * full moon comes, the heroes attuned to each of them, and a timeline of the coming days.
+ * full moon comes, the heroes attuned to each of them with their moon sensitive gear, timelines of the coming days and
+ * the weather. A date control shows the sky of another day without changing the world time.
  */
 
-import {TEMPLATES, setting} from "./config.mjs";
-import {PEAK_PHASE, dayStarts, phaseSegments, spanPercent, splitDuration} from "./lunar.mjs";
+import {MODULE_ID, TEMPLATES, setting} from "./config.mjs";
+import {moonGear} from "./gear.mjs";
+import {exportJournalDialog} from "./journal.mjs";
+import {PEAK_PHASE, clampOffset, phaseSegments, spanPercent, splitDuration, tickPlan, timelineTicks} from "./lunar.mjs";
 import {
   bodyColor, bodyImage, bodyName, calendarUnits, emberReady, forecastBody, formatDate, heroesByAttunement,
-  scanSettings, secondsIntoDay, skyBodies, unboundAttunements
+  peakThreshold, scanSettings, secondsIntoDay, skyBodies, unboundAttunements
 } from "./sky.mjs";
+import {weatherReport} from "./weather.mjs";
 
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
+
+/** How far the almanac looks back and ahead, in days. */
+export const OFFSET_LIMITS = {min: -360, max: 720};
+
+/** The phases a timeline leaves empty, by kind. */
+const QUIET_PHASE = {moon: "none", realm: "dormant"};
+
+/** The phases a timeline shows, by kind, in cycle order. */
+const SHOWN_PHASES = {moon: ["waxing", "full", "waning"], realm: ["ascending", "dominant", "descending"]};
 
 /* -------------------------------------------- */
 
@@ -35,6 +48,27 @@ export function durationLabel(seconds) {
 export function phaseLabel(phase) {
   const key = `SLA.Phase.${phase}`;
   return game.i18n.has(key) ? _loc(key) : phase;
+}
+
+/**
+ * What the influence of a body means, as tooltip HTML. The influence at which the peak phase begins is measured from
+ * Ember's sky, not copied.
+ * @param {import("./sky.mjs").SkyBody} entry
+ * @param {string} name
+ * @param {number} value      The influence in percent
+ * @returns {string}
+ */
+export function influenceTooltip(entry, name, value) {
+  const escape = foundry.utils.escapeHTML;
+  const {kind} = entry;
+  const lines = [
+    `<strong>${escape(_loc("SLA.Almanac.Influence", {value}))}</strong>`,
+    escape(_loc(`SLA.Influence.Meaning.${kind}`, {name}))
+  ];
+  const threshold = peakThreshold(entry);
+  if ( threshold !== null ) lines.push(escape(_loc(`SLA.Influence.Peak.${kind}`, {value: threshold})));
+  if ( kind === "moon" ) lines.push(escape(_loc("SLA.Influence.Effects")));
+  return lines.map(l => `<p>${l}</p>`).join("");
 }
 
 /* -------------------------------------------- */
@@ -93,7 +127,10 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
     position: {width: 600, height: "auto"},
     actions: {
       openActor: LunarAlmanac.#onOpenActor,
-      openCosmos: LunarAlmanac.#onOpenCosmos
+      openCosmos: LunarAlmanac.#onOpenCosmos,
+      shiftDays: LunarAlmanac.#onShiftDays,
+      today: LunarAlmanac.#onToday,
+      exportJournal: LunarAlmanac.#onExportJournal
     }
   };
 
@@ -108,11 +145,48 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
    */
   highlight = null;
 
+  /**
+   * How many days from the world time the almanac shows. The world time itself never changes.
+   * @type {number}
+   */
+  offsetDays = 0;
+
+  /**
+   * The moons which are full at the shown time, during a render.
+   * @type {Set<string>}
+   */
+  #fullMoons = new Set();
+
+  /**
+   * The moon sensitive gear of each hero, during a render.
+   * @type {Map<string, import("./gear.mjs").MoonGear[]>}
+   */
+  #gear = new Map();
+
   /* -------------------------------------------- */
 
   /** @override */
   get title() {
     return _loc("SLA.Almanac.Title");
+  }
+
+  /**
+   * The time the almanac shows.
+   * @type {number}
+   */
+  get viewTime() {
+    return game.time.worldTime + (this.offsetDays * calendarUnits().secondsPerDay);
+  }
+
+  /**
+   * Show the sky a number of days from the world time. 0 shows the world time again.
+   * @param {number} days
+   * @returns {Promise<this>}
+   */
+  async lookAhead(days) {
+    this.offsetDays = clampOffset(days, OFFSET_LIMITS.min, OFFSET_LIMITS.max);
+    if ( this.rendered ) await this.render();
+    return this;
   }
 
   /* -------------------------------------------- */
@@ -125,9 +199,14 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
       context.notReady = _loc(game.modules.get("ember")?.active ? "SLA.Almanac.NoCalendar" : "SLA.Almanac.NoEmber");
       return context;
     }
-    const now = game.time.worldTime;
+    const now = this.viewTime;
+    const entries = skyBodies();
+    const forecasts = new Map(entries.map(entry => [entry.body.id, forecastBody(entry, now)]));
+    this.#fullMoons = new Set(entries.filter(e => (e.kind === "moon") && (forecasts.get(e.body.id).phase === "full"))
+      .map(e => e.body.id));
+    this.#gear = new Map();
     const heroes = heroesByAttunement();
-    const rows = skyBodies().map(entry => this.#prepareBody(entry, now, heroes));
+    const rows = entries.map(entry => this.#prepareBody(entry, forecasts.get(entry.body.id), now, heroes));
     context.moons = rows.filter(r => r.kind === "moon");
     context.realms = rows.filter(r => r.kind === "realm");
     context.unbound = unboundAttunements().filter(id => heroes.get(id)?.length).map(id => ({
@@ -135,10 +214,41 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
       heroes: heroes.get(id).map(h => this.#prepareHero(h))
     }));
     context.date = formatDate(now);
+    context.lookAhead = this.#prepareLookAhead();
+    context.isGM = game.user.isGM;
     context.showTimeline = setting("timelineDays") > 0;
-    if ( context.showTimeline ) context.timeline = this.#prepareTimeline(now);
+    if ( context.showTimeline ) context.timeline = this.#prepareTimeline(now, "moon", setting("timelineDays"));
+    context.showRealmTimeline = (setting("realmTimelineDays") > 0) && (context.realms.length > 0);
+    if ( context.showRealmTimeline ) {
+      context.realmTimeline = this.#prepareTimeline(now, "realm", setting("realmTimelineDays"));
+    }
+    // The weather belongs to the world time, so a preview of another day leaves it out
+    if ( setting("showWeather") && !this.offsetDays ) context.weather = this.#prepareWeather();
     context.canOpenCosmos = !!game.scenes.get("emberCosmos00000");
     return context;
+  }
+
+  /* -------------------------------------------- */
+
+  /** @override */
+  async _onRender(context, options) {
+    await super._onRender(context, options);
+    const input = this.element.querySelector('input[name="offsetDays"]');
+    input?.addEventListener("change", () => this.lookAhead(input.value));
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Prepare the date control.
+   * @returns {object}
+   */
+  #prepareLookAhead() {
+    const days = this.offsetDays;
+    let note = "";
+    if ( days > 0 ) note = _loc("SLA.LookAhead.Ahead", {days});
+    else if ( days < 0 ) note = _loc("SLA.LookAhead.Behind", {days: -days});
+    return {days, preview: days !== 0, note, ...OFFSET_LIMITS};
   }
 
   /* -------------------------------------------- */
@@ -146,13 +256,13 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
   /**
    * Prepare the row of a moon or realm.
    * @param {import("./sky.mjs").SkyBody} entry
+   * @param {import("./sky.mjs").BodyForecast} f
    * @param {number} now
    * @param {Map<string, object[]>} heroes
    * @returns {object}
    */
-  #prepareBody(entry, now, heroes) {
+  #prepareBody(entry, f, now, heroes) {
     const {kind, body} = entry;
-    const f = forecastBody(entry, now);
     const peak = PEAK_PHASE[kind];
     const isPeak = f.phase === peak;
     const name = bodyName(body.id, body);
@@ -169,6 +279,7 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
       const date = formatDate(f.endsAt);
       if ( date ) nextTooltip = _loc("SLA.Almanac.EndsOn", {date});
     }
+    const influence = Math.round(f.influence * 100);
     return {
       id: body.id,
       kind,
@@ -177,7 +288,8 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
       color: bodyColor(body),
       phase: f.phase,
       phaseLabel: phaseLabel(f.phase),
-      influence: Math.round(f.influence * 100),
+      influence,
+      influenceTooltip: influenceTooltip(entry, name, influence),
       isPeak,
       status,
       next,
@@ -195,14 +307,33 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
    * @returns {object}
    */
   #prepareHero(h) {
+    const escape = foundry.utils.escapeHTML;
     // The chip sits in the row of its moon or realm, so the tooltip does not repeat the attunement
-    const lines = [`<strong>${foundry.utils.escapeHTML(h.actor.name)}</strong>`];
+    const lines = [`<strong>${escape(h.actor.name)}</strong>`];
     if ( (h.rank !== null) && !h.blessed ) lines.push(_loc("SLA.Hero.Rank", {rank: h.rank}));
     if ( h.blessed ) {
-      lines.push(_loc("SLA.Hero.Blessed", {rank: h.rank ?? "?", base: h.baseRank ?? "?"}));
+      // Ember's blessing adds attunement points, which do not always reach the next rank
+      const raised = (h.rank !== null) && (h.baseRank !== null) && (h.rank !== h.baseRank);
+      if ( raised ) lines.push(_loc("SLA.Hero.Blessed", {rank: h.rank, base: h.baseRank}));
+      else lines.push(_loc("SLA.Hero.BlessedSameRank", {rank: h.rank ?? "?"}));
       const remaining = h.blessing?.duration?.label;
       if ( remaining && Number.isFinite(h.blessing.duration.secondsRemaining) ) {
-        lines.push(_loc("SLA.Hero.BlessingLeft", {remaining: foundry.utils.escapeHTML(remaining)}));
+        lines.push(_loc("SLA.Hero.BlessingLeft", {remaining: escape(remaining)}));
+      }
+    }
+
+    // Moon sensitive gear: the moons which are full at the shown time stand out
+    const moons = globalThis.ember.calendar.moons;
+    const gear = this.#heroGear(h.actor);
+    const active = gear.flatMap(g => g.moons).filter(id => this.#fullMoons.has(id));
+    if ( gear.length ) {
+      lines.push(`<strong>${escape(_loc("SLA.Gear.Title"))}</strong>`);
+      for ( const g of gear ) {
+        const names = g.moons.map(id => {
+          const label = escape(bodyName(id, moons[id]));
+          return this.#fullMoons.has(id) ? `<strong>${_loc("SLA.Gear.Full", {name: label})}</strong>` : label;
+        });
+        lines.push(`${escape(g.name)}: ${names.join(", ")}`);
       }
     }
     return {
@@ -211,41 +342,94 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
       img: h.actor.img,
       rank: h.rank,
       blessed: h.blessed,
+      gear: gear.length > 0,
+      gearActive: active.length > 0,
+      gearColor: active.length ? bodyColor(moons[active[0]]) : "",
       canOpen: h.actor.testUserPermission(game.user, "LIMITED"),
       tooltip: lines.map(l => `<p>${l}</p>`).join("")
     };
   }
 
+  /**
+   * The moon sensitive gear of a hero, read once per render.
+   * @param {Actor} actor
+   * @returns {import("./gear.mjs").MoonGear[]}
+   */
+  #heroGear(actor) {
+    if ( !this.#gear.has(actor.id) ) {
+      let gear = [];
+      try {
+        gear = moonGear(actor);
+      } catch(err) {
+        console.warn(`${MODULE_ID} | Could not read the gear of ${actor.name}`, err);
+      }
+      this.#gear.set(actor.id, gear);
+    }
+    return this.#gear.get(actor.id);
+  }
+
   /* -------------------------------------------- */
 
   /**
-   * Prepare the timeline of the coming days for the moons.
+   * Prepare a timeline of the coming days: one strip per moon or per inner realm.
    * @param {number} now
+   * @param {"moon"|"realm"} kind
+   * @param {number} days
    * @returns {object}
    */
-  #prepareTimeline(now) {
+  #prepareTimeline(now, kind, days) {
     const {secondsPerDay} = calendarUnits();
-    const days = setting("timelineDays");
     const end = now + (days * secondsPerDay);
-    const ticks = dayStarts(now, end, secondsIntoDay(now), secondsPerDay).map((t, i) => ({
-      left: spanPercent(now, t, now, end).width,
-      label: ((i + 1) % 7 === 0) ? _loc("SLA.Almanac.DayMark", {days: i + 1}) : "",
-      week: (i + 1) % 7 === 0
+    const ticks = timelineTicks(now, end, secondsIntoDay(now), secondsPerDay, tickPlan(days)).map(t => ({
+      left: spanPercent(now, t.time, now, end).width,
+      label: t.label ? _loc("SLA.Almanac.DayMark", {days: t.day}) : "",
+      week: t.label
     }));
-    const rows = skyBodies().filter(e => e.kind === "moon").map(({body}) => {
+    const rows = skyBodies().filter(e => e.kind === kind).map(({body}) => {
       const {step, precision} = scanSettings(body);
+      const name = bodyName(body.id, body);
       const segments = phaseSegments(t => body.animate(t).phase, now, end, step, precision)
-        .filter(s => (s.phase !== "none"))
+        .filter(s => (s.phase !== QUIET_PHASE[kind]))
         .map(s => {
           const date = formatDate(s.start);
-          const tooltip = [`${foundry.utils.escapeHTML(bodyName(body.id, body))}: ${phaseLabel(s.phase)}`];
+          const tooltip = [`${foundry.utils.escapeHTML(name)}: ${phaseLabel(s.phase)}`];
           if ( s.start > now ) tooltip.push(_loc("SLA.Almanac.StartsIn", {duration: durationLabel(s.start - now)}));
           if ( date && (s.start > now) ) tooltip.push(date);
           return {...spanPercent(s.start, s.end, now, end), phase: s.phase, tooltip: tooltip.join("<br>")};
         });
-      return {id: body.id, name: bodyName(body.id, body), color: bodyColor(body), segments};
+      return {id: body.id, name, color: bodyColor(body), segments};
     });
-    return {days, ticks, rows};
+    const legend = SHOWN_PHASES[kind].map(phase => ({phase, label: phaseLabel(phase)}));
+    return {days, kind, ticks, rows, legend};
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Prepare the weather where the party is now. The coming wind changes are for the GM only.
+   * @returns {object|null}
+   */
+  #prepareWeather() {
+    const now = game.time.worldTime;
+    let report = null;
+    try {
+      report = weatherReport(now);
+    } catch(err) {
+      console.warn(`${MODULE_ID} | Could not read Ember's weather`, err);
+    }
+    if ( !report ) return null;
+    const windText = w => (w.label ? _loc("SLA.Weather.Wind", {label: w.label, speed: w.speed})
+      : _loc("SLA.Weather.WindSpeed", {speed: w.speed}));
+    return {
+      events: report.events,
+      wind: report.wind ? {...report.wind, text: windText(report.wind)} : null,
+      forecast: game.user.isGM ? report.forecast.map(w => ({
+        ...w,
+        text: windText(w),
+        when: _loc("SLA.Almanac.StartsIn", {duration: durationLabel(w.time - now)}),
+        date: formatDate(w.time)
+      })) : []
+    };
   }
 
   /* -------------------------------------------- */
@@ -269,5 +453,30 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
   static #onOpenCosmos() {
     game.scenes.get("emberCosmos00000")?.view();
   }
-}
 
+  /**
+   * Look some days further ahead or back.
+   * @this {LunarAlmanac}
+   * @param {PointerEvent} event
+   * @param {HTMLElement} target
+   */
+  static #onShiftDays(event, target) {
+    this.lookAhead(this.offsetDays + (Number(target.dataset.days) || 0));
+  }
+
+  /**
+   * Show the sky of the world time again.
+   * @this {LunarAlmanac}
+   */
+  static #onToday() {
+    this.lookAhead(0);
+  }
+
+  /**
+   * Write the coming full moons into a journal entry, from the shown date (GM).
+   * @this {LunarAlmanac}
+   */
+  static #onExportJournal() {
+    exportJournalDialog(this.viewTime);
+  }
+}

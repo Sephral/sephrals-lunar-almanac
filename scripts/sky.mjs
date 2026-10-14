@@ -5,8 +5,8 @@
  * Nothing of Ember is copied into the module; names, colors and images come from the running Ember module.
  */
 
-import {HERO_TYPES} from "./config.mjs";
-import {PEAK_PHASE, findChange, nextStart} from "./lunar.mjs";
+import {HERO_TYPES, setting} from "./config.mjs";
+import {PEAK_PHASE, findChange, findStart, nextStart} from "./lunar.mjs";
 
 /** Images Ember's calendar uses for its moons, by moon id. */
 const MOON_IMAGE = id => `modules/ember/ui/calendar/moon-${id}.webp`;
@@ -191,6 +191,31 @@ export function forecastBody({kind, body}, now=game.time.worldTime) {
   return {phase, influence, endsAt, peakAt};
 }
 
+/** The influence at which each body enters its peak phase, by body id. */
+const thresholds = new Map();
+
+/**
+ * From which influence on is a body full or dominant? Ember decides this in its code; the almanac measures it at the
+ * start of a peak phase, so nothing of Ember's rules is copied.
+ * @param {SkyBody} entry
+ * @returns {number|null}   The influence in percent
+ */
+export function peakThreshold({kind, body}) {
+  if ( thresholds.has(body.id) ) return thresholds.get(body.id);
+  const sample = t => body.animate(t).phase;
+  const {step, horizon, precision} = scanSettings(body);
+  const peak = PEAK_PHASE[kind];
+  const now = game.time.worldTime;
+  let value = null;
+  try {
+    const start = (sample(now) === peak) ? findStart(sample, now, horizon, step, precision)
+      : nextStart(sample, peak, now, horizon, step, precision);
+    if ( start !== null ) value = Math.floor(body.animate(start).influence * 100);
+  } catch {}
+  if ( Number.isFinite(value) ) thresholds.set(body.id, value);
+  return value;
+}
+
 /* -------------------------------------------- */
 
 /**
@@ -205,12 +230,57 @@ export function forecastBody({kind, body}, now=game.time.worldTime) {
  */
 
 /**
- * The player characters this user may see.
+ * The members of the system's party: Crucible's party (the group actor chosen in the system settings) or the primary
+ * party of D&D 5e. Read directly, so no warning appears when no party is set. The members are resolved from their
+ * stored ids as well: a group prepared before its members were loaded has an empty member list on that client.
+ * @returns {Actor[]}   All members, also those this user may not see
+ */
+export function systemParty() {
+  let party = null;
+  try {
+    party = (game.system.id === "crucible") ? globalThis.crucible?.party : game.actors.party;
+  } catch {
+    return [];
+  }
+  const system = party?.system;
+  if ( !system ) return [];
+  const members = new Set(system.actors instanceof Set ? system.actors : []);
+  for ( const m of Array.isArray(system.members) ? system.members : [] ) {
+    const actor = (m?.actor instanceof Actor) ? m.actor : game.actors.get?.(m?.actorId ?? m?.actor);
+    if ( actor instanceof Actor ) members.add(actor);
+  }
+  return [...members];
+}
+
+/**
+ * Is an actor a player character type?
+ * @param {Actor} actor
+ * @returns {boolean}
+ */
+function isHeroType(actor) {
+  return HERO_TYPES.includes(actor?.type);
+}
+
+/**
+ * The player characters this user may see: the members of the party, or every player character when the GM chose so
+ * or the party has no heroes. Whether the party counts is decided for everyone alike; only then are the heroes this
+ * user may not see left out, so a player never falls back to all player characters.
  * @returns {Actor[]}
  */
 export function partyHeroes() {
-  return game.actors.filter(a => HERO_TYPES.includes(a.type) && a.hasPlayerOwner && a.visible)
-    .sort((a, b) => a.name.localeCompare(b.name, game.i18n.lang));
+  const party = (setting("heroSource") === "party") ? systemParty().filter(isHeroType) : [];
+  const list = party.length ? party : game.actors.filter(a => isHeroType(a) && a.hasPlayerOwner);
+  return [...new Set(list)].filter(a => a.visible).sort((a, b) => a.name.localeCompare(b.name, game.i18n.lang));
+}
+
+/**
+ * Could the almanac list an actor, whether or not this user sees it? Used to redraw after changes.
+ * @param {Actor} actor
+ * @returns {boolean}
+ */
+export function mayBeListed(actor) {
+  if ( !isHeroType(actor) ) return false;
+  return actor.hasPlayerOwner || systemParty().includes(actor);
 }
 
 /**

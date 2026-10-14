@@ -179,3 +179,147 @@ export function dayStarts(from, to, secondsIntoDay, secondsPerDay) {
   for ( let t = from - secondsIntoDay + secondsPerDay; t <= to; t += secondsPerDay ) starts.push(t);
   return starts;
 }
+
+/* -------------------------------------------- */
+
+/**
+ * When did the phase at a time begin? The counterpart of findChange, looking back.
+ * @param {(time: number) => string} sample
+ * @param {number} at                 A time in the phase
+ * @param {number} horizon            How far to look back in seconds
+ * @param {number} step               Scan step in seconds, shorter than the shortest phase
+ * @param {number} [precision=60]
+ * @returns {number|null}             The earliest time found in the phase, or null beyond the horizon
+ */
+export function findStart(sample, at, horizon, step, precision=60) {
+  if ( !(step > 0) || !(horizon > 0) ) return null;
+  const phase = sample(at);
+  const end = at - horizon;
+  let inside = at;
+  for ( let t = Math.max(at - step, end); ; t = Math.max(t - step, end) ) {
+    if ( sample(t) !== phase ) {
+      let outside = t;
+      while ( (inside - outside) > precision ) {
+        const mid = Math.floor((outside + inside) / 2);
+        if ( sample(mid) === phase ) inside = mid;
+        else outside = mid;
+      }
+      return inside;
+    }
+    if ( t <= end ) return null;
+    inside = t;
+  }
+}
+
+/**
+ * The periods of one phase which overlap a time range, with their true start and end even outside the range.
+ * @param {(time: number) => string} sample
+ * @param {string} phase
+ * @param {number} from
+ * @param {number} to
+ * @param {number} step
+ * @param {number} [precision=60]
+ * @param {number} [horizon]          How far to look beyond the range for the true start and end
+ * @returns {{start: number|null, end: number|null, running: boolean}[]}  A null start or end lies beyond the horizon;
+ *                                    running marks the period which already runs at `from`
+ */
+export function phaseSpans(sample, phase, from, to, step, precision=60, horizon=to - from) {
+  const spans = [];
+  for ( const s of phaseSegments(sample, from, to, step, precision) ) {
+    if ( s.phase !== phase ) continue;
+    const running = s.start <= from;
+    const start = running ? findStart(sample, from, horizon, step, precision) : s.start;
+    const end = (s.end >= to) ? findChange(sample, to, horizon, step, precision) : s.end;
+    spans.push({start, end, running});
+  }
+  return spans;
+}
+
+/**
+ * How dense the marks of a timeline are: a tick every few days and a label on some of them.
+ * @param {number} days     The length of the timeline
+ * @returns {{every: number, labelEvery: number}}
+ */
+export function tickPlan(days) {
+  if ( days <= 60 ) return {every: 1, labelEvery: 7};
+  if ( days <= 180 ) return {every: 10, labelEvery: 30};
+  return {every: 30, labelEvery: 60};
+}
+
+/**
+ * The marks of a timeline: the starts of every few calendar days.
+ * @param {number} from
+ * @param {number} to
+ * @param {number} secondsIntoDay   Seconds since the start of the day at `from`
+ * @param {number} secondsPerDay
+ * @param {{every: number, labelEvery: number}} plan
+ * @returns {{time: number, day: number, label: boolean}[]}   day counts the days from `from`
+ */
+export function timelineTicks(from, to, secondsIntoDay, secondsPerDay, {every, labelEvery}) {
+  return dayStarts(from, to, secondsIntoDay, secondsPerDay)
+    .map((time, i) => ({time, day: i + 1}))
+    .filter(({day}) => (day % every) === 0)
+    .map(tick => ({...tick, label: (tick.day % labelEvery) === 0}));
+}
+
+/**
+ * A day offset entered by the user, as a whole number within limits.
+ * @param {*} value
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
+ */
+export function clampOffset(value, min, max) {
+  const n = Math.round(Number(value));
+  if ( !Number.isFinite(n) ) return 0;
+  return Math.min(Math.max(n, min), max);
+}
+
+/* -------------------------------------------- */
+
+/**
+ * Which moons does the source text of an item's hooks read? Code which reads the moons of the calendar counts as
+ * moon sensitive; the moons it names are those whose ids appear in it. Code which picks the moon at runtime names
+ * none and so depends on every moon.
+ * @param {string} source       The source of the hook functions and the data they carry
+ * @param {string[]} moonIds    The ids of the moons of the calendar
+ * @returns {string[]|null}     The moon ids, or null when the code does not read the moons
+ */
+export function moonReferences(source, moonIds) {
+  if ( !source || !/calendar\s*\.\s*moons\b/.test(source) ) return null;
+  const named = moonIds.filter(id => {
+    const escaped = id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(`(?<![\\w$])${escaped}(?![\\w$])`).test(source);
+  });
+  return named.length ? named : [...moonIds];
+}
+
+/**
+ * The source text of a hook object: its functions and the plain data next to them.
+ * @param {object|null|undefined} hooks
+ * @returns {string}
+ */
+export function hookSource(hooks) {
+  if ( !hooks || (typeof hooks !== "object") ) return "";
+  const parts = [];
+  for ( const value of Object.values(hooks) ) {
+    if ( typeof value === "function" ) parts.push(Function.prototype.toString.call(value));
+    else if ( value && (typeof value === "object") ) {
+      try {
+        parts.push(JSON.stringify(value));
+      } catch {}
+    }
+  }
+  return parts.join("\n");
+}
+
+/**
+ * Merge lists of moon ids into one, in the order of the calendar. Ids the calendar does not know are dropped.
+ * @param {string[]} order      The moon ids of the calendar
+ * @param {...(string[]|null|undefined)} lists
+ * @returns {string[]}
+ */
+export function mergeMoons(order, ...lists) {
+  const wanted = new Set(lists.flatMap(list => (Array.isArray(list) ? list : [])));
+  return order.filter(id => wanted.has(id));
+}

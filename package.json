@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check scripts/alerts.mjs && node --check scripts/almanac.mjs && node --check scripts/config.mjs && node --check scripts/controls.mjs && node --check scripts/language.mjs && node --check scripts/lunar.mjs && node --check scripts/selftest.mjs && node --check scripts/settings.mjs && node --check scripts/sky.mjs && node --check scripts/sla.mjs",
+    "check": "node --check scripts/alerts.mjs && node --check scripts/almanac.mjs && node --check scripts/config.mjs && node --check scripts/controls.mjs && node --check scripts/gear.mjs && node --check scripts/journal.mjs && node --check scripts/language.mjs && node --check scripts/lunar.mjs && node --check scripts/selftest.mjs && node --check scripts/settings.mjs && node --check scripts/sky.mjs && node --check scripts/sla.mjs && node --check scripts/weather.mjs",
     "check:manifest": "node build/validate-manifest.mjs",
     "test": "node --test",
     "test:coverage": "node --test --experimental-test-coverage",

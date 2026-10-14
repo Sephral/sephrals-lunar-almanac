@@ -38,12 +38,14 @@ test("every key used by scripts and templates exists", async () => {
     for ( const match of text.matchAll(/["'`](SLA\.[A-Za-z0-9_.]+)["'`]/g) ) used.add(match[1]);
   }
   // Keys built from template strings in settings.mjs, selftest.mjs, almanac.mjs and alerts.mjs
-  for ( const key of ["uiLanguage", "phaseAlert", "chatAlert", "timelineDays", "calendarButton", "controlButton"] ) {
+  for ( const key of ["uiLanguage", "phaseAlert", "chatAlert", "heroSource", "timelineDays", "realmTimelineDays",
+    "showWeather", "calendarButton", "controlButton"] ) {
     used.add(`SLA.SETTINGS.${key}.name`);
     used.add(`SLA.SETTINGS.${key}.hint`);
   }
   for ( const key of ["EmberInactive", "NoCalendar", "MoonCount", "RealmCount", "Units", "Phase", "Forecast", "Image",
-    "Attunements", "BodyAttunements", "Rank", "Heroes"] ) used.add(`SLA.SELFTEST.${key}`);
+    "Attunements", "BodyAttunements", "Rank", "Heroes", "Weather", "GearHooks"] ) used.add(`SLA.SELFTEST.${key}`);
+  for ( const key of ["Start", "End", "Body", "Phase", "Duration", "Heroes"] ) used.add(`SLA.Export.Column.${key}`);
   for ( const phase of ["none", "waxing", "full", "waning", "dormant", "ascending", "dominant", "descending"] ) {
     used.add(`SLA.Phase.${phase}`);
   }
@@ -51,7 +53,15 @@ test("every key used by scripts and templates exists", async () => {
     used.add(`SLA.Almanac.PeakIn.${kind}`);
     used.add(`SLA.Alert.Peak.${kind}`);
     used.add(`SLA.Alert.WasPeak.${kind}`);
+    used.add(`SLA.Influence.Meaning.${kind}`);
+    used.add(`SLA.Influence.Peak.${kind}`);
   }
   const missing = [...used].filter(key => !enKeys.has(key));
   assert.deepEqual(missing, []);
+});
+
+test("no key is both a string and a namespace", () => {
+  for ( const key of enKeys ) {
+    assert.ok(![...enKeys].some(other => other.startsWith(`${key}.`)), key);
+  }
 });

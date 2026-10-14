@@ -4,13 +4,55 @@
   {{else}}
 
   <header class="sla-head">
-    {{#if date}}<span class="sla-date"><i class="fa-solid fa-calendar-day" inert></i> {{date}}</span>{{/if}}
+    {{#if date}}<span class="sla-date {{#if lookAhead.preview}}preview{{/if}}"><i class="fa-solid fa-calendar-day" inert></i> {{date}}</span>{{/if}}
+    <div class="sla-lookahead">
+      <button type="button" data-action="shiftDays" data-days="-1" data-tooltip="SLA.LookAhead.Back"
+              aria-label="{{localize "SLA.LookAhead.Back"}}"><i class="fa-solid fa-chevron-left" inert></i></button>
+      <input type="number" name="offsetDays" value="{{lookAhead.days}}" min="{{lookAhead.min}}" max="{{lookAhead.max}}"
+             step="1" data-tooltip="SLA.LookAhead.Offset" aria-label="{{localize "SLA.LookAhead.Offset"}}">
+      <button type="button" data-action="shiftDays" data-days="1" data-tooltip="SLA.LookAhead.Forward"
+              aria-label="{{localize "SLA.LookAhead.Forward"}}"><i class="fa-solid fa-chevron-right" inert></i></button>
+      {{#if lookAhead.preview}}
+      <button type="button" class="sla-today" data-action="today" data-tooltip="SLA.LookAhead.TodayHint">
+        <i class="fa-solid fa-rotate-left" inert></i> {{localize "SLA.LookAhead.Today"}}
+      </button>
+      {{/if}}
+    </div>
+    {{#if isGM}}
+    <button type="button" class="sla-icon-button" data-action="exportJournal" data-tooltip="SLA.Export.Button"
+            aria-label="{{localize "SLA.Export.Button"}}"><i class="fa-solid fa-book" inert></i></button>
+    {{/if}}
     {{#if canOpenCosmos}}
-    <button type="button" class="sla-cosmos" data-action="openCosmos" data-tooltip="SLA.Almanac.Cosmos">
-      <i class="fa-solid fa-moon-over-sun" inert></i>
-    </button>
+    <button type="button" class="sla-icon-button" data-action="openCosmos" data-tooltip="SLA.Almanac.Cosmos"
+            aria-label="{{localize "SLA.Almanac.Cosmos"}}"><i class="fa-solid fa-moon-over-sun" inert></i></button>
     {{/if}}
   </header>
+  {{#if lookAhead.preview}}<p class="sla-preview-note"><i class="fa-solid fa-eye" inert></i> {{lookAhead.note}}</p>{{/if}}
+
+  {{#if weather}}
+  <section class="sla-weather">
+    <span class="sla-weather-label">{{localize "SLA.Weather.Title"}}</span>
+    {{#each weather.events}}
+    <span class="sla-weather-event" {{#if color}}style="--sla-weather-color: {{color}}"{{/if}} data-tooltip="{{kind}}">
+      {{#if icon}}<img src="{{icon}}" alt="" onerror="this.remove()">{{/if}}{{label}}
+    </span>
+    {{else}}
+    <span class="sla-weather-event">{{localize "SLA.Weather.Clear"}}</span>
+    {{/each}}
+    {{#if weather.wind}}
+    <span class="sla-wind"><i class="fa-solid fa-arrow-right" style="transform: rotate({{weather.wind.angle}}deg)" inert></i> {{weather.wind.text}}</span>
+    {{/if}}
+    {{#if weather.forecast.length}}
+    <ol class="sla-wind-forecast plain">
+      <li class="sla-forecast-head" data-tooltip="SLA.Weather.ForecastHint">{{localize "SLA.Weather.Forecast"}}</li>
+      {{#each weather.forecast}}
+      <li data-tooltip="{{date}}"><span class="sla-when">{{when}}</span>
+        <i class="fa-solid fa-arrow-right" style="transform: rotate({{angle}}deg)" inert></i> {{text}}</li>
+      {{/each}}
+    </ol>
+    {{/if}}
+  </section>
+  {{/if}}
 
   <section class="sla-section">
     <h3>{{localize "SLA.Almanac.Moons"}}</h3>
@@ -21,29 +63,8 @@
 
   {{#if showTimeline}}
   <section class="sla-section sla-timeline-section">
-    <h3>{{localize "SLA.Almanac.Timeline" days=timeline.days}}</h3>
-    <div class="sla-timeline">
-      <div class="sla-ticks">
-        {{#each timeline.ticks}}
-        <span class="sla-tick {{#if week}}week{{/if}}" style="left: {{left}}%">{{#if label}}<span>{{label}}</span>{{/if}}</span>
-        {{/each}}
-      </div>
-      {{#each timeline.rows}}
-      <div class="sla-track" style="--sla-color: {{color}}">
-        <span class="sla-track-name">{{name}}</span>
-        <div class="sla-track-bar">
-          {{#each segments}}
-          <span class="sla-segment {{phase}}" style="left: {{left}}%; width: {{width}}%" data-tooltip-html="{{tooltip}}"></span>
-          {{/each}}
-        </div>
-      </div>
-      {{/each}}
-    </div>
-    <p class="sla-legend">
-      <span class="sla-key waxing"></span>{{localize "SLA.Phase.waxing"}}
-      <span class="sla-key full"></span>{{localize "SLA.Phase.full"}}
-      <span class="sla-key waning"></span>{{localize "SLA.Phase.waning"}}
-    </p>
+    <h3>{{#if (eq timeline.days 1)}}{{localize "SLA.Almanac.TimelineOne"}}{{else}}{{localize "SLA.Almanac.Timeline" days=timeline.days}}{{/if}}</h3>
+    {{> "modules/sephrals-lunar-almanac/templates/timeline.hbs" timeline}}
   </section>
   {{/if}}
 
@@ -53,6 +74,13 @@
     <ol class="sla-bodies realms plain">
       {{#each realms}}{{> "modules/sephrals-lunar-almanac/templates/body-row.hbs"}}{{/each}}
     </ol>
+  </section>
+  {{/if}}
+
+  {{#if showRealmTimeline}}
+  <section class="sla-section sla-timeline-section">
+    <h3>{{localize "SLA.Almanac.RealmTimeline" days=realmTimeline.days}}</h3>
+    {{> "modules/sephrals-lunar-almanac/templates/timeline.hbs" realmTimeline}}
   </section>
   {{/if}}
 
