@@ -63,6 +63,15 @@
   font-size: var(--font-size-12);
 }
 
+/* The today button keeps its slot while it is hidden, so the arrows stay in place */
+.sla-almanac .sla-lookahead .sla-today {
+  margin-right: 2px;
+}
+
+.sla-almanac .sla-lookahead .sla-today.inactive {
+  visibility: hidden;
+}
+
 .sla-almanac .sla-lookahead input[type="number"] {
   width: 52px;
   height: 24px;

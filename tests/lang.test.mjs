@@ -46,6 +46,8 @@ test("every key used by scripts and templates exists", async () => {
   for ( const key of ["EmberInactive", "NoCalendar", "MoonCount", "RealmCount", "Units", "Phase", "Forecast", "Image",
     "Attunements", "BodyAttunements", "Rank", "Heroes", "Weather", "GearHooks"] ) used.add(`SLA.SELFTEST.${key}`);
   for ( const key of ["Start", "End", "Body", "Phase", "Duration", "Heroes"] ) used.add(`SLA.Export.Column.${key}`);
+  // Ember's wind levels, see weather.mjs
+  for ( const level of ["0", "1", "2", "3", "4"] ) used.add(`SLA.Weather.Strength.${level}`);
   for ( const phase of ["none", "waxing", "full", "waning", "dormant", "ascending", "dominant", "descending"] ) {
     used.add(`SLA.Phase.${phase}`);
   }

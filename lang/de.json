@@ -100,8 +100,17 @@
     "Weather": {
       "Title": "Wetter",
       "Clear": "Klar",
-      "Wind": "{label}, {speed} mph",
-      "WindSpeed": "Wind {speed} mph",
+      "Wind": "{label}, {speed}",
+      "WindSpeed": "Wind {speed}",
+      "Mph": "{value} mph",
+      "Kmh": "{value} km/h",
+      "Strength": {
+        "0": "Windstill",
+        "1": "Brise",
+        "2": "Windig",
+        "3": "Stürmisch",
+        "4": "Sturmböen"
+      },
       "Forecast": "Kommender Wind",
       "ForecastHint": "Nur für dich sichtbar. Ember plant den Wind bis zu zwei Tage im Voraus. Regen, Nebel und anderes Wetter ziehen mit dem Wind und lassen sich nicht vorhersagen."
     },

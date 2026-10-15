@@ -13,8 +13,8 @@ globalThis.foundry = {
 };
 
 const {MODULE_ID} = await import("../scripts/config.mjs");
-const {FOLLOW_FOUNDRY, UI_LANGUAGES, applyModuleLanguage, forcedLanguage, mergeStrings} =
-  await import("../scripts/language.mjs");
+const {FOLLOW_FOUNDRY, UI_LANGUAGES, applyModuleLanguage, forcedLanguage, mergeStrings, moduleLanguage,
+  resolveLanguage} = await import("../scripts/language.mjs");
 const {SETTINGS, registerSettings} = await import("../scripts/settings.mjs");
 
 /**
@@ -91,6 +91,28 @@ test("forcedLanguage only forces the shipped languages", () => {
   assert.equal(forcedLanguage(FOLLOW_FOUNDRY), null);
   assert.equal(forcedLanguage("fr"), null);
   assert.equal(forcedLanguage(undefined), null);
+});
+
+test("the shown language is the forced one, or Foundry's if the module ships it", () => {
+  assert.equal(resolveLanguage("de", "en"), "de");
+  assert.equal(resolveLanguage("en", "de"), "en");
+  assert.equal(resolveLanguage(FOLLOW_FOUNDRY, "de"), "de");
+  assert.equal(resolveLanguage(FOLLOW_FOUNDRY, "en"), "en");
+  assert.equal(resolveLanguage(FOLLOW_FOUNDRY, "fr"), "en");
+  assert.equal(resolveLanguage(undefined, undefined), "en");
+});
+
+test("moduleLanguage reads the setting and Foundry's language", () => {
+  const saved = globalThis.game;
+  globalThis.game = {settings: {get: () => FOLLOW_FOUNDRY}, i18n: {lang: "de"}};
+  assert.equal(moduleLanguage(), "de");
+  globalThis.game = {settings: {get: () => "en"}, i18n: {lang: "de"}};
+  assert.equal(moduleLanguage(), "en");
+  globalThis.game = {settings: {get: () => {
+    throw new Error("not registered");
+  }}, i18n: {lang: "de"}};
+  assert.equal(moduleLanguage(), "de");
+  globalThis.game = saved;
 });
 
 test("mergeStrings lays the forced file over Foundry's strings", () => {

@@ -12,12 +12,19 @@ import {
   bodyColor, bodyImage, bodyName, calendarUnits, emberReady, forecastBody, formatDate, heroesByAttunement,
   peakThreshold, scanSettings, secondsIntoDay, skyBodies, unboundAttunements
 } from "./sky.mjs";
-import {weatherReport} from "./weather.mjs";
+import {moduleLanguage} from "./language.mjs";
+import {weatherReport, windText} from "./weather.mjs";
 
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 /** How far the almanac looks back and ahead, in days. */
 export const OFFSET_LIMITS = {min: -360, max: 720};
+
+/**
+ * How long the almanac waits after a click on the day control before it redraws, in milliseconds. Quick clicks in a
+ * row then all land on the same buttons and lead to one redraw.
+ */
+export const SHIFT_RENDER_DELAY = 250;
 
 /** The phases a timeline leaves empty, by kind. */
 const QUIET_PHASE = {moon: "none", realm: "dormant"};
@@ -152,6 +159,18 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
   offsetDays = 0;
 
   /**
+   * Whether a pointer is pressed on the day control. A redraw then keeps the pressed control, so the click still
+   * lands on it.
+   * @type {boolean}
+   */
+  #pressed = false;
+
+  /** Redraw after the clicks on the day control stop. */
+  #renderSoon = foundry.utils.debounce(() => {
+    if ( this.rendered ) this.render();
+  }, SHIFT_RENDER_DELAY);
+
+  /**
    * The moons which are full at the shown time, during a render.
    * @type {Set<string>}
    */
@@ -187,6 +206,33 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
     this.offsetDays = clampOffset(days, OFFSET_LIMITS.min, OFFSET_LIMITS.max);
     if ( this.rendered ) await this.render();
     return this;
+  }
+
+  /**
+   * Move the shown day from the day control: the control shows the new day at once, the almanac redraws once the
+   * clicks stop. Every click counts, also while a redraw is under way, because the offset changes right away.
+   * @param {number} days   Days from the world time
+   */
+  shiftTo(days) {
+    this.offsetDays = clampOffset(days, OFFSET_LIMITS.min, OFFSET_LIMITS.max);
+    this.#syncLookAhead();
+    this.#renderSoon();
+  }
+
+  /**
+   * Show the shown day in the day control without a redraw: the number and the today button.
+   */
+  #syncLookAhead() {
+    const controls = this.element?.querySelector(".sla-lookahead");
+    if ( !controls ) return;
+    const input = controls.querySelector('input[name="offsetDays"]');
+    if ( input && (Number(input.value) !== this.offsetDays) ) input.value = String(this.offsetDays);
+    const today = controls.querySelector(".sla-today");
+    if ( today ) {
+      const preview = this.offsetDays !== 0;
+      today.disabled = !preview;
+      today.classList.toggle("inactive", !preview);
+    }
   }
 
   /* -------------------------------------------- */
@@ -231,10 +277,43 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
   /* -------------------------------------------- */
 
   /** @override */
+  async _onFirstRender(context, options) {
+    await super._onFirstRender(context, options);
+    // The window element stays across redraws, so these listeners are added once
+    this.element.addEventListener("change", event => {
+      if ( event.target.matches?.('input[name="offsetDays"]') ) this.lookAhead(event.target.value);
+    });
+    this.element.addEventListener("pointerdown", event => {
+      if ( !event.target.closest?.(".sla-lookahead") ) return;
+      this.#pressed = true;
+      const done = new AbortController();
+      // The click follows the pointerup in the same task, so the flag is cleared after it
+      const release = () => {
+        done.abort();
+        setTimeout(() => {
+          this.#pressed = false;
+        }, 0);
+      };
+      document.addEventListener("pointerup", release, {capture: true, signal: done.signal});
+      document.addEventListener("pointercancel", release, {capture: true, signal: done.signal});
+    });
+  }
+
+  /** @override */
+  _syncPartState(partId, newElement, priorElement, state) {
+    super._syncPartState(partId, newElement, priorElement, state);
+    // A redraw between pointerdown and pointerup would drop the click: keep the pressed day control
+    if ( !this.#pressed ) return;
+    const prior = priorElement.querySelector(".sla-lookahead");
+    const next = newElement.querySelector(".sla-lookahead");
+    if ( prior && next ) next.replaceWith(prior);
+  }
+
+  /** @override */
   async _onRender(context, options) {
     await super._onRender(context, options);
-    const input = this.element.querySelector('input[name="offsetDays"]');
-    input?.addEventListener("change", () => this.lookAhead(input.value));
+    // A redraw which began before the last click shows the day the control was set to since
+    this.#syncLookAhead();
   }
 
   /* -------------------------------------------- */
@@ -418,14 +497,14 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
       console.warn(`${MODULE_ID} | Could not read Ember's weather`, err);
     }
     if ( !report ) return null;
-    const windText = w => (w.label ? _loc("SLA.Weather.Wind", {label: w.label, speed: w.speed})
-      : _loc("SLA.Weather.WindSpeed", {speed: w.speed}));
+    const lang = moduleLanguage();
+    const text = w => windText(w, lang, game.i18n);
     return {
       events: report.events,
-      wind: report.wind ? {...report.wind, text: windText(report.wind)} : null,
+      wind: report.wind ? {...report.wind, text: text(report.wind)} : null,
       forecast: game.user.isGM ? report.forecast.map(w => ({
         ...w,
-        text: windText(w),
+        text: text(w),
         when: _loc("SLA.Almanac.StartsIn", {duration: durationLabel(w.time - now)}),
         date: formatDate(w.time)
       })) : []
@@ -461,7 +540,7 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
    * @param {HTMLElement} target
    */
   static #onShiftDays(event, target) {
-    this.lookAhead(this.offsetDays + (Number(target.dataset.days) || 0));
+    this.shiftTo(this.offsetDays + (Number(target.dataset.days) || 0));
   }
 
   /**
@@ -469,7 +548,7 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
    * @this {LunarAlmanac}
    */
   static #onToday() {
-    this.lookAhead(0);
+    this.shiftTo(0);
   }
 
   /**

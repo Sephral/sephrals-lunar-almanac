@@ -100,8 +100,17 @@
     "Weather": {
       "Title": "Weather",
       "Clear": "Clear",
-      "Wind": "{label}, {speed} mph",
-      "WindSpeed": "Wind {speed} mph",
+      "Wind": "{label}, {speed}",
+      "WindSpeed": "Wind {speed}",
+      "Mph": "{value} mph",
+      "Kmh": "{value} km/h",
+      "Strength": {
+        "0": "Calm",
+        "1": "Breeze",
+        "2": "Windy",
+        "3": "Gale",
+        "4": "Squall"
+      },
       "Forecast": "Coming wind",
       "ForecastHint": "Only you see this. Ember plans the wind up to two days ahead. Rain, fog and other weather drift with the wind and cannot be foreseen."
     },

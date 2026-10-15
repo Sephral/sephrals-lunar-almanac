@@ -6,17 +6,17 @@
   <header class="sla-head">
     {{#if date}}<span class="sla-date {{#if lookAhead.preview}}preview{{/if}}"><i class="fa-solid fa-calendar-day" inert></i> {{date}}</span>{{/if}}
     <div class="sla-lookahead">
-      <button type="button" data-action="shiftDays" data-days="-1" data-tooltip="SLA.LookAhead.Back"
+      {{!-- The today button keeps its place left of the arrows, hidden at today, so the arrows never move --}}
+      <button type="button" name="today" class="sla-today {{#unless lookAhead.preview}}inactive{{/unless}}"
+              data-action="today" data-tooltip="SLA.LookAhead.TodayHint" {{#unless lookAhead.preview}}disabled{{/unless}}>
+        <i class="fa-solid fa-rotate-left" inert></i> {{localize "SLA.LookAhead.Today"}}
+      </button>
+      <button type="button" name="dayBack" data-action="shiftDays" data-days="-1" data-tooltip="SLA.LookAhead.Back"
               aria-label="{{localize "SLA.LookAhead.Back"}}"><i class="fa-solid fa-chevron-left" inert></i></button>
       <input type="number" name="offsetDays" value="{{lookAhead.days}}" min="{{lookAhead.min}}" max="{{lookAhead.max}}"
              step="1" data-tooltip="SLA.LookAhead.Offset" aria-label="{{localize "SLA.LookAhead.Offset"}}">
-      <button type="button" data-action="shiftDays" data-days="1" data-tooltip="SLA.LookAhead.Forward"
+      <button type="button" name="dayForward" data-action="shiftDays" data-days="1" data-tooltip="SLA.LookAhead.Forward"
               aria-label="{{localize "SLA.LookAhead.Forward"}}"><i class="fa-solid fa-chevron-right" inert></i></button>
-      {{#if lookAhead.preview}}
-      <button type="button" class="sla-today" data-action="today" data-tooltip="SLA.LookAhead.TodayHint">
-        <i class="fa-solid fa-rotate-left" inert></i> {{localize "SLA.LookAhead.Today"}}
-      </button>
-      {{/if}}
     </div>
     {{#if isGM}}
     <button type="button" class="sla-icon-button" data-action="exportJournal" data-tooltip="SLA.Export.Button"

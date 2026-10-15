@@ -28,6 +28,31 @@ export function forcedLanguage(choice) {
 }
 
 /**
+ * The language the module shows: the forced one, or Foundry's if the module ships it. Any other Foundry language
+ * falls back to the English strings.
+ * @param {string} choice         Value of the uiLanguage setting
+ * @param {string} foundryLang    Foundry's language
+ * @returns {string}
+ */
+export function resolveLanguage(choice, foundryLang) {
+  return forcedLanguage(choice) ?? (UI_LANGUAGES.includes(foundryLang) ? foundryLang : "en");
+}
+
+/**
+ * The language the module shows right now.
+ * @returns {string}
+ */
+export function moduleLanguage() {
+  let choice = FOLLOW_FOUNDRY;
+  try {
+    choice = game.settings.get("sephrals-lunar-almanac", "uiLanguage");
+  } catch {
+    // Before the settings are registered the module follows Foundry
+  }
+  return resolveLanguage(choice, game.i18n?.lang);
+}
+
+/**
  * The module strings for a forced language: the strings of its file over the ones Foundry loaded, so a key missing
  * in the file keeps Foundry's text.
  * @param {object} loaded   The SLA strings Foundry loaded

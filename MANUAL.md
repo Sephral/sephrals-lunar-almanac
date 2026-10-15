@@ -16,7 +16,7 @@ Every moon and realm lists the heroes attuned to it, with their rank. Blessed he
 
 ## Looking at another day
 
-The arrows next to the date step one day back or ahead, the number field jumps to any day up to two years ahead or one year back. The almanac then shows the sky of that day: phases, times, timelines and which gear lights up. *Today* returns to the world time. Nothing changes in the world, the day control only changes your view. The weather shows only for today.
+The arrows next to the date step one day back or ahead, the number field jumps to any day up to two years ahead or one year back. Every click counts, so a few quick clicks jump a few days at once. The almanac then shows the sky of that day: phases, times, timelines and which gear lights up. *Today* left of the arrows returns to the world time. It only shows while you look at another day, and its place stays reserved, so the arrows never move. Nothing changes in the world, the day control only changes your view. The weather shows only for today.
 
 ## Which heroes are listed
 
@@ -31,7 +31,7 @@ A small moon next to a hero means that some of the hero's items react to the moo
 
 ## Weather
 
-The almanac shows Ember's weather where the party is: rain, fog and the like, and the wind with its speed. The GM also sees how the wind will turn in the coming hours. Ember plans the wind up to two days ahead. Rain, fog and other weather drift with the wind, so where they go cannot be foreseen and the almanac does not guess. Each user can hide the weather in the settings.
+The almanac shows Ember's weather where the party is: rain, fog and the like, and the wind with its strength and speed. Ember measures the wind in mph. In German the almanac shows km/h and German names for the wind strengths (Windstill, Brise, Windig, Stürmisch, Sturmböen), in English it shows Ember's names and mph. The GM also sees how the wind will turn in the coming hours. Ember plans the wind up to two days ahead. Rain, fog and other weather drift with the wind, so where they go cannot be foreseen and the almanac does not guess. Each user can hide the weather in the settings.
 
 ## The almanac in the journal
 
@@ -78,7 +78,7 @@ After an update of Ember or Foundry the GM gets a short notice. The self test in
 | `moonGear(actor)` | The items of a hero which react to the moons, with their moons |
 | `markedMoons(item)` | The moons the GM marked on an item |
 | `markItem(item)` | Asks which moons an item depends on (GM) |
-| `weather()` | The weather where the party is, the wind and the coming wind changes |
+| `weather()` | The weather where the party is, the wind and the coming wind changes, with the wind speed in mph (`speed`) and km/h (`kmh`) |
 | `exportJournal({days, realms})` | Writes the journal entry without asking (GM) |
 | `ready()` | Whether Ember's calendar is ready |
 | `runSelfTest()` | Runs the self test (GM) |
@@ -87,4 +87,4 @@ After an update of Ember or Foundry the GM gets a short notice. The self test in
 
 * The almanac needs Ember with its adventure scenes in the world. Without them Ember has no calendar.
 * Recognizing moon sensitive gear on its own works in Crucible. In other systems mark the items yourself.
-* Weather names and wind speeds come from Ember and appear in the language Ember shows them in.
+* Weather names come from Ember and appear in the language Ember shows them in. Only the wind strengths have German names of their own. A wind strength Ember adds in a later version keeps Ember's name.

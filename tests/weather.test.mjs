@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import {weatherReport, windChanges, windLevel} from "../scripts/weather.mjs";
+import {readFile} from "node:fs/promises";
+
+import {
+  KMH_PER_MPH, mphToKmh, weatherReport, windChanges, windLevel, windStrengthLabel, windText
+} from "../scripts/weather.mjs";
 
 const HOUR = 3600;
 
@@ -51,8 +55,8 @@ test("the weather report reads the party's hex, the wind and the coming wind", (
   };
   const report = weatherReport(HOUR);
   assert.deepEqual(report.events, [{label: "Thick mist", kind: "Mist", icon: "mist.webp", color: "#888"}]);
-  assert.deepEqual(report.wind, {label: "Breeze", speed: 7, angle: 90});
-  assert.deepEqual(report.forecast, [{time: 5 * HOUR, label: "Gale", speed: 25, angle: 180}]);
+  assert.deepEqual(report.wind, {level: "1", label: "Breeze", speed: 7, kmh: 11, angle: 90});
+  assert.deepEqual(report.forecast, [{time: 5 * HOUR, level: "2", label: "Gale", speed: 25, kmh: 40, angle: 180}]);
 
   // A managed scene has its own weather
   globalThis.ember.scene = {weather: {events: []}};
@@ -65,4 +69,63 @@ test("without Ember's weather there is no report", () => {
   globalThis.ember = {weather: {getConfig: () => null}, region: {}};
   assert.equal(weatherReport(0), null);
   delete globalThis.ember;
+});
+
+test("the wind level follows the exact speed, like Ember", () => {
+  globalThis.ember = {
+    region: {slice: {id: "surface"}, weather: {events: []}},
+    weather: {getConfig: () => ({strengths: LEVELS}), state: {wind: {direction: 0, speed: 2.6, history: []}}}
+  };
+  // 2.6 mph shows as 3 mph but stays below the lowest speed of level 1
+  assert.deepEqual(weatherReport(0).wind, {level: "0", label: "Still", speed: 3, kmh: 4, angle: 0});
+  delete globalThis.ember;
+});
+
+test("mph turn into whole km/h", () => {
+  assert.equal(KMH_PER_MPH, 1.609);
+  assert.equal(mphToKmh(0), 0);
+  assert.equal(mphToKmh(1), 2);
+  assert.equal(mphToKmh(4), 6);
+  assert.equal(mphToKmh(7), 11);
+  assert.equal(mphToKmh(16), 26);
+  assert.equal(mphToKmh(48), 77);
+  assert.equal(mphToKmh(undefined), 0);
+  assert.equal(mphToKmh("x"), 0);
+});
+
+/** The module strings of a language file, as a stub of game.i18n. */
+async function i18nOf(lang) {
+  const file = JSON.parse(await readFile(new URL(`../lang/${lang}.json`, import.meta.url), "utf8"));
+  const get = key => key.split(".").reduce((o, k) => o?.[k], file);
+  return {
+    has: key => typeof get(key) === "string",
+    localize: key => get(key) ?? key,
+    format: (key, data) => (get(key) ?? key).replace(/{(\w+)}/g, (_, k) => data[k])
+  };
+}
+
+test("German shows the module's names of Ember's wind levels, English and unknown levels Ember's", async () => {
+  const de = await i18nOf("de");
+  const translate = key => (de.has(key) ? de.localize(key) : null);
+  const expected = {0: "Windstill", 1: "Brise", 2: "Windig", 3: "Stürmisch", 4: "Sturmböen"};
+  for ( const [level, label] of Object.entries(expected) ) {
+    assert.equal(windStrengthLabel(level, "Ember", "de", translate), label);
+  }
+  assert.equal(windStrengthLabel("9", "Hurricane", "de", translate), "Hurricane");
+  assert.equal(windStrengthLabel(null, "", "de", translate), "");
+  assert.equal(windStrengthLabel("1", "Breeze", "en", () => "Brise"), "Breeze");
+  assert.equal(windStrengthLabel("1", undefined, "en", () => null), "");
+});
+
+test("the wind text uses mph in English and km/h in German", async () => {
+  const en = await i18nOf("en");
+  const de = await i18nOf("de");
+  const breeze = {level: "1", label: "Breeze", speed: 7, kmh: 11};
+  assert.equal(windText(breeze, "en", en), "Breeze, 7 mph");
+  assert.equal(windText(breeze, "de", de), "Brise, 11 km/h");
+  // A level the module does not know keeps Ember's name
+  assert.equal(windText({level: "7", label: "Tempest", speed: 60, kmh: 97}, "de", de), "Tempest, 97 km/h");
+  // Without a level only the speed shows, converted when the report has no km/h
+  assert.equal(windText({level: null, label: "", speed: 5}, "de", de), "Wind 8 km/h");
+  assert.equal(windText({level: null, label: "", speed: 5}, "en", en), "Wind 5 mph");
 });
