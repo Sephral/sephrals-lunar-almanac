@@ -29,6 +29,12 @@ A small moon next to a hero means that some of the hero's items react to the moo
 * **Found on its own (Crucible):** Ember ties some items, talents and enchantments to the moons. The almanac recognizes them in the running game. Gear counts while it is equipped (and invested, if it needs that).
 * **Marked by the GM:** open the sheet of any item you can edit (items in a locked compendium cannot be marked), then *Depends on moons* in the menu of its title bar, and tick the moons. The mark stays on the item, also when it changes hands. Untick all moons to remove it.
 
+## Recovery at the full moon (D&D 5e)
+
+In Ember's D&D 5e mode (D&D 5e 6) items and activities with limited uses can recover at the peak of a moon or realm. The almanac adds one choice per moon and realm to the recovery periods of D&D 5e, next to Dawn and Dusk: *Full moon of Cora*, *Signara dominant* and so on. Pick it in the uses of the item or activity like any other period, with a formula if only part of the uses comes back.
+
+When the world time moves past the start of that full moon, D&D 5e recovers the uses together with its own dawn and dusk recovery and lists the changes in its time passed message. The message also names the moons that became full. A jump over several full moons counts each of them, a step back in time recovers nothing. The GM's client does the counting, so a GM has to be online.
+
 ## Weather
 
 The almanac shows Ember's weather where the party is: rain, fog and the like, and the wind with its strength and speed. Ember measures the wind in mph. In German the almanac shows km/h and German names for the wind strengths (Windstill, Brise, Windig, Stürmisch, Sturmböen), in English it shows Ember's names and mph. The GM also sees how the wind will turn in the coming hours. Ember plans the wind up to two days ahead. Rain, fog and other weather drift with the wind, so where they go cannot be foreseen and the almanac does not guess. Each user can hide the weather in the settings.

@@ -136,6 +136,10 @@
         "Heroes": "Attuned heroes"
       }
     },
+    "Recovery": {
+      "moon": "Full moon of {name}",
+      "realm": "{name} dominant"
+    },
     "SETTINGS": {
       "uiLanguage": {
         "name": "Module language",

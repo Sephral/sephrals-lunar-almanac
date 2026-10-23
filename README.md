@@ -17,6 +17,7 @@
 * **Your heroes in the sky:** every moon and realm lists the heroes of your party attuned to it, with their rank. Blessed heroes glow golden. Click a hero to open the sheet.
 * **Gear that answers the moons:** items that react to a moon show a small moon next to their hero and light up while that moon is full. The GM can mark any other item too.
 * **Weather at a glance:** the weather where the party is and the wind, straight from Ember. The GM also sees how the wind will turn.
+* **Recharge at the full moon (D&D 5e):** an item can recover its uses at the full moon of a chosen moon or when a realm becomes dominant, right in the recovery settings of D&D 5e.
 * **Never miss a full moon:** when time moves on, everyone learns which moon became full. After a long rest or a journey one message sums up everything that happened in between. The GM can post full moons to the chat as well.
 * **A calendar for the GM:** one click writes the coming full moons and dominant realms into a journal only the GM can see.
 * **Look, don't touch:** the almanac never changes the time, the moons or the attunements.
@@ -34,7 +35,7 @@ Search for **Lunar Almanac** in Foundry's module browser or open the [package pa
 
 Foundry VTT 14 · Ember 0.6.3 with its adventure scenes · English and German
 
-The almanac needs your copy of the Ember module and contains no Ember content itself. It is tested with Crucible. Ember's D&D 5e mode should work as well. After an update of Ember or Foundry the GM gets a short notice, and a self test in the module settings checks that the sky can still be read.
+The almanac needs your copy of the Ember module and contains no Ember content itself. It is tested with Crucible and with Ember's D&D 5e mode. After an update of Ember or Foundry the GM gets a short notice, and a self test in the module settings checks that the sky can still be read.
 
 ## Learn more
 

@@ -2,7 +2,7 @@
   "id": "sephrals-lunar-almanac",
   "title": "Sephral’s Lunar Almanac",
   "description": "An almanac for the sky of Ember: the phase of every moon and inner realm, how long it lasts, when the next full moon comes, a timeline of the coming days and the heroes attuned to each of them, with optional notifications when a moon becomes full.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "compatibility": {
     "minimum": 14,
     "verified": "14.369"

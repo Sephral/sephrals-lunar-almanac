@@ -6,6 +6,7 @@ import {editItemMoons, markedMoons, moonGear, onGetHeaderControls} from "./gear.
 import {exportJournal} from "./journal.mjs";
 import {applyModuleLanguage} from "./language.mjs";
 import {noticeNewVersions, runSelfTest} from "./selftest.mjs";
+import {onPreCreateTimePassedMessage, onUpdateWorldTime as addPeakDeltas, registerRecoveryPeriods} from "./recovery.mjs";
 import {registerSettings} from "./settings.mjs";
 import {
   emberReady, forecastBody, heroAttunement, heroesByAttunement, mayBeListed, partyHeroes, skyBodies, waitForEmber
@@ -24,6 +25,9 @@ Hooks.once("init", () => {
   Hooks.on("getSceneControlButtons", onGetSceneControlButtons);
   Hooks.on("renderEmberCalendarNavigation", onRenderEmberCalendar);
   Hooks.on("updateWorldTime", onUpdateWorldTime);
+  // Before dnd5e 6 recovers limited uses, which it registers on ready
+  Hooks.on("updateWorldTime", addPeakDeltas);
+  Hooks.on("dnd5e.preCreateTimePassedMessage", onPreCreateTimePassedMessage);
   Hooks.on("getHeaderControlsDocumentSheetV2", onGetHeaderControls);
 
   // Attunements and blessings live on the heroes, gear in their items (equipping, investing, marks, new talents), the
@@ -81,7 +85,10 @@ Hooks.once("i18nInit", () => {
 
 Hooks.once("ready", async () => {
   await languageReady;
-  if ( await waitForEmber() ) initAlerts();
+  if ( await waitForEmber() ) {
+    initAlerts();
+    registerRecoveryPeriods();
+  }
   noticeNewVersions();
 });
 

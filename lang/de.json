@@ -136,6 +136,10 @@
         "Heroes": "Helden mit Attunement"
       }
     },
+    "Recovery": {
+      "moon": "Vollmond von {name}",
+      "realm": "{name} dominant"
+    },
     "SETTINGS": {
       "uiLanguage": {
         "name": "Modulsprache",
