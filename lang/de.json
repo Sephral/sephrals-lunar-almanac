@@ -42,7 +42,8 @@
         "moon": "Vollmond in {duration}",
         "realm": "Dominant in {duration}"
       },
-      "RealmTimeline": "Innere Reiche, die nächsten {days} Tage"
+      "RealmTimeline": "Innere Reiche, die nächsten {days} Tage",
+      "Settings": "Einstellungen"
     },
     "Hero": {
       "Rank": "Rang {rank}",

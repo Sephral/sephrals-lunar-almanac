@@ -4,7 +4,7 @@
  * the weather. A date control shows the sky of another day without changing the world time.
  */
 
-import {MODULE_ID, TEMPLATES, setting} from "./config.mjs";
+import {MODULE_ID, TEMPLATES, addSettingsGear, setting} from "./config.mjs";
 import {moonGear} from "./gear.mjs";
 import {exportJournalDialog} from "./journal.mjs";
 import {PEAK_PHASE, clampOffset, phaseSegments, spanPercent, splitDuration, tickPlan, timelineTicks} from "./lunar.mjs";
@@ -275,6 +275,13 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /* -------------------------------------------- */
+
+  /** @override */
+  async _renderFrame(options) {
+    const frame = await super._renderFrame(options);
+    addSettingsGear(frame);
+    return frame;
+  }
 
   /** @override */
   async _onFirstRender(context, options) {

@@ -49,7 +49,7 @@ When the world time moves on, everybody learns about the phase changes they aske
 
 ## Settings
 
-All options are in *Game Settings → Configure Settings → Sephral’s Lunar Almanac*:
+All options are in *Game Settings → Configure Settings → Sephral’s Lunar Almanac*. The gear in the title bar of the almanac opens them directly.
 
 | Setting | What it does |
 | --- | --- |
