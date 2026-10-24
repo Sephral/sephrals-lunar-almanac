@@ -9,6 +9,7 @@
 import {MODULE_ID} from "./config.mjs";
 import {hookSource, mergeMoons, moonReferences} from "./lunar.mjs";
 import {bodyName, emberReady} from "./sky.mjs";
+import {countFeature} from "./usage.mjs";
 
 /** The flag of the GM's marker: an array of moon ids. */
 export const GEAR_FLAG = "moons";
@@ -135,6 +136,7 @@ export async function editItemMoons(item) {
     rejectClose: false
   });
   if ( !Array.isArray(result) ) return null;
+  countFeature(MODULE_ID, "gearMarked");
   if ( result.length ) await item.setFlag(MODULE_ID, GEAR_FLAG, result);
   else if ( marked.size ) await item.unsetFlag(MODULE_ID, GEAR_FLAG);
   return result;

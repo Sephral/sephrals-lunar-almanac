@@ -11,6 +11,7 @@ import {registerSettings} from "./settings.mjs";
 import {
   emberReady, forecastBody, heroAttunement, heroesByAttunement, mayBeListed, partyHeroes, skyBodies, waitForEmber
 } from "./sky.mjs";
+import {registerUsage} from "./usage.mjs";
 import {weatherReport} from "./weather.mjs";
 
 /** Settings of other packages whose change the almanac shows: Ember's weather and the system's party. */
@@ -18,6 +19,11 @@ const WATCHED_SETTINGS = new Set(["ember.weather", "crucible.party", "dnd5e.prim
 
 Hooks.once("init", () => {
   registerSettings();
+  registerUsage(MODULE_ID, {
+    features: ["openFromCalendar", "openFromControls", "lookAhead", "openActor", "openCosmos", "journalExport",
+      "gearMarked"],
+    settings: ["phaseAlert", "chatAlert", "timelineDays"]
+  });
   foundry.applications.handlebars.loadTemplates([
     `${TEMPLATES}/body-row.hbs`, `${TEMPLATES}/hero-chip.hbs`, `${TEMPLATES}/timeline.hbs`
   ]);

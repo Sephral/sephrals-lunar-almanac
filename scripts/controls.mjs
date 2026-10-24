@@ -3,8 +3,9 @@
  * controls. Each user can switch both off.
  */
 
-import {setting} from "./config.mjs";
+import {MODULE_ID, setting} from "./config.mjs";
 import {openAlmanac} from "./almanac.mjs";
+import {countFeature} from "./usage.mjs";
 
 /** The name of the tool in the token controls. */
 const TOOL_NAME = "sla-almanac";
@@ -24,7 +25,10 @@ export function onGetSceneControlButtons(controls) {
     order: Object.keys(tokens.tools).length,
     button: true,
     visible: true,
-    onChange: () => openAlmanac()
+    onChange: () => {
+      countFeature(MODULE_ID, "openFromControls");
+      openAlmanac();
+    }
   };
 }
 
@@ -48,6 +52,7 @@ export function onRenderEmberCalendar(app, element) {
   button.addEventListener("click", event => {
     event.preventDefault();
     event.stopPropagation();
+    countFeature(MODULE_ID, "openFromCalendar");
     openAlmanac();
   });
   anchor.after(button);

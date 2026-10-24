@@ -14,6 +14,7 @@ import {
 } from "./sky.mjs";
 import {moduleLanguage} from "./language.mjs";
 import {weatherReport, windText} from "./weather.mjs";
+import {countFeature, markUsed} from "./usage.mjs";
 
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
@@ -286,6 +287,7 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
   /** @override */
   async _onFirstRender(context, options) {
     await super._onFirstRender(context, options);
+    markUsed(MODULE_ID);
     // The window element stays across redraws, so these listeners are added once
     this.element.addEventListener("change", event => {
       if ( event.target.matches?.('input[name="offsetDays"]') ) this.lookAhead(event.target.value);
@@ -529,6 +531,7 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
    * @param {HTMLElement} target
    */
   static #onOpenActor(event, target) {
+    countFeature(MODULE_ID, "openActor");
     game.actors.get(target.closest("[data-actor-id]")?.dataset.actorId)?.sheet?.render({force: true});
   }
 
@@ -537,6 +540,7 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
    * @this {LunarAlmanac}
    */
   static #onOpenCosmos() {
+    countFeature(MODULE_ID, "openCosmos");
     game.scenes.get("emberCosmos00000")?.view();
   }
 
@@ -547,6 +551,8 @@ export class LunarAlmanac extends HandlebarsApplicationMixin(ApplicationV2) {
    * @param {HTMLElement} target
    */
   static #onShiftDays(event, target) {
+    // A preview counts once when it leaves the world time, not per click
+    if ( !this.offsetDays ) countFeature(MODULE_ID, "lookAhead");
     this.shiftTo(this.offsetDays + (Number(target.dataset.days) || 0));
   }
 

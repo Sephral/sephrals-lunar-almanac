@@ -8,6 +8,7 @@ import {MODULE_ID} from "./config.mjs";
 import {PEAK_PHASE, phaseSpans} from "./lunar.mjs";
 import {durationLabel, phaseLabel} from "./almanac.mjs";
 import {bodyName, calendarUnits, emberReady, formatDate, heroesByAttunement, scanSettings, skyBodies} from "./sky.mjs";
+import {countFeature} from "./usage.mjs";
 
 /** The flag which marks the almanac entry and its page. */
 const ENTRY_FLAG = "almanac";
@@ -153,6 +154,7 @@ export async function exportJournal({from=game.time.worldTime, days=EXPORT_DAYS.
     });
   }
   if ( !entry ) return null;
+  countFeature(MODULE_ID, "journalExport");
   ui.notifications.info(_loc("SLA.Export.Done", {name: entry.name}));
   if ( open ) entry.sheet?.render({force: true});
   return entry;
