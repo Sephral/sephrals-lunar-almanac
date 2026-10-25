@@ -64,6 +64,19 @@ All options are in *Game Settings → Configure Settings → Sephral’s Lunar A
 | Button in the token controls | The moon tool on the left (for you) |
 | Self test | Checks the parts of Ember the almanac reads (GM) |
 
+## Usage statistics
+
+The module can take part in a small usage report shared by all of Sephral’s modules. Nothing is counted or sent until the GM agrees: shortly after the world starts, the active GM is asked, and the question comes back at every start until there is an answer. The answer counts for all of Sephral’s modules in the world. *Share usage statistics* in the module settings turns the report on or off at any time, and *Manage statistics* below it shows what the report contains right now.
+
+With the GM’s consent only the active GM’s browser counts, and it sends at most one report a day. The question lists everything the report contains, from the Foundry version to a random world ID. For the Lunar Almanac it holds:
+
+* on how many of the last 30 days the module was used
+* how often the almanac is opened from the calendar or the token controls, it looks ahead to another day, an actor or the cosmos scene is opened from it, the almanac is written to the journal and gear is marked as moon sensitive
+* the settings *Phase notifications*, *Full moons in the chat* and *Timeline length* (only the chosen option)
+* where errors occur in the module code: file, line and error type, never the error message
+
+No names, chat messages, notes, dice results or other content of the world are sent.
+
 ## Self test
 
 After an update of Ember or Foundry the GM gets a short notice. The self test in the settings checks that the moons, realms, attunements, the weather and, in Crucible, the moon sensitive gear can still be read, and posts the result as a chat message only the GM sees.
