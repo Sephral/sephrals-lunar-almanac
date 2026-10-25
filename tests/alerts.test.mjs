@@ -4,7 +4,7 @@ import test from "node:test";
 const DAY = 86400;
 
 /**
- * A test moon with Ember's phase shares: 28 days, dormant for 14, waxing 5.25, full 3.5, waning 5.25.
+ * A test moon with a cycle of 28 days: dormant for 14, waxing 5.25, full 3.5, waning 5.25.
  * @param {number} t
  * @returns {string}
  */
@@ -117,7 +117,7 @@ test("a long jump lists the latest phases and counts the earlier ones", () => {
 
 test("steps back and jumps beyond a year only report the net change", () => {
   assert.deepEqual(step(20 * DAY, 0).notes, ["SLA.Alert.Change(Test Moon|SLA.Phase.none)"]);
-  // 400 days are more than the calendar year of 360 days
+  // 400 days are more than a test calendar year of 360 days
   assert.deepEqual(step(0, 400 * DAY).notes, ["SLA.Alert.Change(Test Moon|SLA.Phase.waxing)"]);
 });
 

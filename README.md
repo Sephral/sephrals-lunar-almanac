@@ -1,6 +1,6 @@
 # Sephral’s Lunar Almanac
 
-**Six moons and three inner realms circle above Ember, and your heroes are bound to them. When does the next full moon rise, and who is waiting for it?** Ember's calendar shows where the moons stand today. Lunar Almanac shows what comes next.
+**Moons and inner realms circle above Ember, and your heroes are bound to them. When does the next full moon rise, and who is waiting for it?** Ember's calendar shows where the moons stand today. Lunar Almanac shows what comes next.
 
 [![Foundry VTT package](https://img.shields.io/badge/Foundry%20VTT-Package%20page-fe6a1f?logo=foundryvirtualtabletop&logoColor=white)](https://foundryvtt.com/packages/sephrals-lunar-almanac)
 [![Join Discord](https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?logo=discord&logoColor=white)](https://discord.gg/7BjCgDYaBP)

@@ -31,7 +31,7 @@ A small moon next to a hero means that some of the hero's items react to the moo
 
 ## Recovery at the full moon (D&D 5e)
 
-In Ember's D&D 5e mode (D&D 5e 6) items and activities with limited uses can recover at the peak of a moon or realm. The almanac adds one choice per moon and realm to the recovery periods of D&D 5e, next to Dawn and Dusk: *Full moon of Cora*, *Signara dominant* and so on. Pick it in the uses of the item or activity like any other period, with a formula if only part of the uses comes back.
+In Ember's D&D 5e mode (D&D 5e 6) items and activities with limited uses can recover at the peak of a moon or realm. The almanac adds one choice per moon and realm to the recovery periods of D&D 5e, next to Dawn and Dusk: one for the full moon of each moon and one for each realm at its peak. Pick it in the uses of the item or activity like any other period, with a formula if only part of the uses comes back.
 
 When the world time moves past the start of that full moon, D&D 5e recovers the uses together with its own dawn and dusk recovery and lists the changes in its time passed message. The message also names the moons that became full. A jump over several full moons counts each of them, a step back in time recovers nothing. The GM's client does the counting, so a GM has to be online.
 

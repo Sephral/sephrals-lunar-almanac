@@ -9,7 +9,7 @@ const DAY = 86400;
 const HOUR = 3600;
 
 /**
- * A test moon with Ember's phase shares: 28 days, dormant for 14, waxing 5.25, full 3.5, waning 5.25.
+ * A test moon with a cycle of 28 days: dormant for 14, waxing 5.25, full 3.5, waning 5.25.
  * @param {number} t
  * @returns {string}
  */
@@ -160,21 +160,21 @@ test("day offsets are whole numbers within limits", () => {
 });
 
 test("moon references: code which reads the calendar's moons and the moons it names", () => {
-  const ids = ["aura", "cora", "ragen"];
+  const ids = ["alba", "dorn", "sele"];
   assert.equal(moonReferences("resistances.fire.bonus += 5;", ids), null, "no moons read");
-  assert.equal(moonReferences("const aura = 1;", ids), null, "a name alone is not enough");
-  assert.deepEqual(moonReferences("if ( ember.calendar.moons.cora.phase === 'full' ) x++;", ids), ["cora"]);
-  assert.deepEqual(moonReferences("ember.calendar.moons.ragen.phase; ember.calendar.moons.aura.phase", ids),
-    ["aura", "ragen"]);
+  assert.equal(moonReferences("const alba = 1;", ids), null, "a name alone is not enough");
+  assert.deepEqual(moonReferences("if ( ember.calendar.moons.dorn.phase === 'full' ) x++;", ids), ["dorn"]);
+  assert.deepEqual(moonReferences("ember.calendar.moons.sele.phase; ember.calendar.moons.alba.phase", ids),
+    ["alba", "sele"]);
   // A moon picked at runtime depends on every moon
   assert.deepEqual(moonReferences("const phase = ember.calendar.moons[moonId]?.phase;", ids), ids);
-  // Whole words only: "auras" or "coral" are not moons
-  assert.deepEqual(moonReferences("ember.calendar.moons.cora; auras; coral", ids), ["cora"]);
+  // Whole words only: "albas" or "dornig" are not moons
+  assert.deepEqual(moonReferences("ember.calendar.moons.dorn; albas; dornig", ids), ["dorn"]);
 });
 
 test("hook source covers functions and the data next to them", () => {
   const hooks = {
-    _TABLE: Object.freeze({aura: "a", cora: "b"}),
+    _TABLE: Object.freeze({alba: "a", dorn: "b"}),
     prepare(item, out) {
       for ( const [id] of Object.entries(hooks._TABLE) ) out[id] = ember.calendar.moons[id].phase;
     },
@@ -182,8 +182,8 @@ test("hook source covers functions and the data next to them", () => {
   };
   const source = hookSource(hooks);
   assert.match(source, /calendar.moons/);
-  assert.match(source, /"aura"/);
-  assert.deepEqual(moonReferences(source, ["aura", "cora", "ragen"]), ["aura", "cora"]);
+  assert.match(source, /"alba"/);
+  assert.deepEqual(moonReferences(source, ["alba", "dorn", "sele"]), ["alba", "dorn"]);
   assert.equal(hookSource(null), "");
   const circular = {};
   circular.self = circular;
@@ -191,7 +191,7 @@ test("hook source covers functions and the data next to them", () => {
 });
 
 test("mergeMoons keeps the calendar order and drops unknown ids", () => {
-  const order = ["aura", "cora", "ragen"];
-  assert.deepEqual(mergeMoons(order, ["ragen"], ["aura", "ragen", "gone"], null), ["aura", "ragen"]);
+  const order = ["alba", "dorn", "sele"];
+  assert.deepEqual(mergeMoons(order, ["sele"], ["alba", "sele", "gone"], null), ["alba", "sele"]);
   assert.deepEqual(mergeMoons(order), []);
 });

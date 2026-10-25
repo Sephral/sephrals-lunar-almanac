@@ -4,10 +4,10 @@
  * tests can run in Node.
  */
 
-/** The phases of Ember's six moons, in cycle order. */
+/** The phases of Ember's moons, in cycle order. */
 export const MOON_PHASES = ["none", "waxing", "full", "waning"];
 
-/** The phases of Ember's three inner realms, in cycle order. */
+/** The phases of Ember's inner realms, in cycle order. */
 export const REALM_PHASES = ["dormant", "ascending", "dominant", "descending"];
 
 /** The phase a body is strongest in, by kind. */

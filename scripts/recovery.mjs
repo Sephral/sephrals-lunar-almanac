@@ -2,7 +2,7 @@
  * Recovery at the peaks of the sky in D&D 5e. Ember's D&D 5e worlds run on dnd5e 6, which recovers limited uses with
  * the calendar: on every change of the world time it counts how often midnight, dawn and dusk passed and recovers the
  * uses whose recovery period belongs to one of these counts. The almanac adds one recovery period per moon and realm,
- * "Full moon of Cora", and counts how often each of them reached its peak, so an item can recover at a full moon.
+ * named after it, and counts how often each of them reached its peak, so an item can recover at a full moon.
  */
 
 import {PEAK_PHASE, phaseStarts} from "./lunar.mjs";

@@ -4,7 +4,7 @@ import test from "node:test";
 const DAY = 86400;
 
 /**
- * A test moon with Ember's phase shares: 28 days, dormant for 14, waxing 5.25, full 3.5, waning 5.25.
+ * A test moon with a cycle of 28 days: dormant for 14, waxing 5.25, full 3.5, waning 5.25.
  * @param {number} t
  * @returns {string}
  */

@@ -1,5 +1,5 @@
 /**
- * The almanac window: Ember's six moons and three inner realms with their phase, how long it lasts and when the next
+ * The almanac window: Ember's moons and inner realms with their phase, how long it lasts and when the next
  * full moon comes, the heroes attuned to each of them with their moon sensitive gear, timelines of the coming days and
  * the weather. A date control shows the sky of another day without changing the world time.
  */
