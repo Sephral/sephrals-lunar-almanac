@@ -186,7 +186,7 @@
       }
     },
     "SELFTEST": {
-      "Title": "Mondalmanach Selbsttest",
+      "Title": "Mondalmanach-Selbsttest",
       "Run": "Selbsttest starten",
       "Hint": "Prüft die Teile von Ember, die der Almanach liest. Nach jedem Update von Ember oder Foundry ausführen.",
       "Started": "Selbsttest des Mondalmanachs läuft …",
