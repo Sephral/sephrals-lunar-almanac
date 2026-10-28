@@ -63,6 +63,7 @@ All options are in *Game Settings → Configure Settings → Sephral’s Lunar A
 | Button in Ember's calendar | The moon button next to the cosmos button (for you) |
 | Button in the token controls | The moon tool on the left (for you) |
 | Self test | Checks the parts of Ember the almanac reads (GM) |
+| Debug file | Saves a file for bug reports, see [Debug file](#debug-file) (GM) |
 
 ## Usage statistics
 
@@ -80,6 +81,12 @@ No names, chat messages, notes, dice results or other content of the world are s
 ## Self test
 
 After an update of Ember or Foundry the GM gets a short notice. The self test in the settings checks that the moons, realms, attunements, the weather and, in Crucible, the moon sensitive gear can still be read, and posts the result as a chat message only the GM sees.
+
+## Debug file
+
+For bug reports, the GM saves one file about all of Sephral’s modules in this world: `Save debug file` in the module settings, or `Save Debug File (Sephral’s Modules)` in the context menu of a chat message. It holds the versions of Foundry, the system and the active modules, the settings of the modules and what they recorded, for the Lunar Almanac the verified and installed versions, whether Ember's calendar is ready, the phase of every moon and realm at the world time, how many heroes are listed and whether the full moon recovery is available. Macros call `game.modules.get("sephrals-lunar-almanac").api.saveDebugFile()`.
+
+The file contains chat text and whispers. Check it before you share it.
 
 ## API
 
@@ -101,6 +108,7 @@ After an update of Ember or Foundry the GM gets a short notice. The self test in
 | `exportJournal({days, realms})` | Writes the journal entry without asking (GM) |
 | `ready()` | Whether Ember's calendar is ready |
 | `runSelfTest()` | Runs the self test (GM) |
+| `saveDebugFile()` | Saves the debug file of Sephral’s modules (GM) |
 
 ## Limits
 

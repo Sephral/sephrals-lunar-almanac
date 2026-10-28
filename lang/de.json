@@ -208,6 +208,13 @@
       "Heroes": "Keiner der Spielercharaktere hat ein Ember-Attunement.",
       "Weather": "Embers Wetter ließ sich nicht lesen. Der Almanach zeigt kein Wetter.",
       "GearHooks": "Crucibles Hooks für Gegenstände fehlen. Mondabhängige Ausrüstung wird nur über Markierungen der Spielleitung erkannt."
+    },
+    "DEBUG": {
+      "Title": "Debug-Datei",
+      "Save": "Debug-Datei speichern",
+      "Hint": "Speichert eine Datei für Fehlerberichte über alle Module von Sephral in dieser Welt: Versionen, Einstellungen und was die Module aufgezeichnet haben, etwa die letzten Chatnachrichten, die sie gelesen haben. Sie enthält Chattext und Flüsternachrichten, prüfe sie vor dem Teilen.",
+      "Entry": "Debug-Datei speichern (Sephral’s Module)",
+      "Saved": "Debug-Datei {file} gespeichert. Sie enthält Chattext und Flüsternachrichten, prüfe sie vor dem Teilen."
     }
   }
 }

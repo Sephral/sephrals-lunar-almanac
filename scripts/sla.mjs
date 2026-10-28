@@ -2,6 +2,8 @@ import {MODULE_ID, TEMPLATES} from "./config.mjs";
 import {initAlerts, onUpdateWorldTime} from "./alerts.mjs";
 import {LunarAlmanac, openAlmanac, refreshAlmanac, scheduleRefresh} from "./almanac.mjs";
 import {onGetSceneControlButtons, onRenderEmberCalendar} from "./controls.mjs";
+import {registerDebug} from "./debug.mjs";
+import {saveDebugFile} from "./debug-file.mjs";
 import {editItemMoons, markedMoons, moonGear, onGetHeaderControls} from "./gear.mjs";
 import {exportJournal} from "./journal.mjs";
 import {applyModuleLanguage} from "./language.mjs";
@@ -19,6 +21,7 @@ const WATCHED_SETTINGS = new Set(["ember.weather", "crucible.party", "dnd5e.prim
 
 Hooks.once("init", () => {
   registerSettings();
+  registerDebug();
   registerUsage(MODULE_ID, {
     features: ["openFromCalendar", "openFromControls", "lookAhead", "openActor", "openCosmos", "journalExport",
       "gearMarked"],
@@ -78,6 +81,8 @@ Hooks.once("init", () => {
     ready: emberReady,
     /** Check the Ember integration (GM). */
     runSelfTest,
+    /** Save the debug file of Sephral's modules (GM): about one chat message, or without an id the latest picture. */
+    saveDebugFile: messageId => saveDebugFile(messageId ?? null, {moduleId: MODULE_ID}),
     LunarAlmanac
   };
 });
