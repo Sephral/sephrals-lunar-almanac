@@ -79,6 +79,7 @@ test("the timeline lengths are number fields with a range", () => {
 
 test("the self test is a GM menu backed by an application class", () => {
   const {menus} = register();
+  // The window Sephral's Modules registers first, in the init hook of the entry file
   assert.deepEqual([...menus.keys()], ["selfTest", "debugFile"]);
   const menu = menus.get("selfTest");
   assert.equal(menu.restricted, true);

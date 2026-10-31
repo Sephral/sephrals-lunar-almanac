@@ -1,9 +1,10 @@
-import {MODULE_ID, TEMPLATES} from "./config.mjs";
+import {MODULE_ID, TEMPLATES, TESTED_VERSIONS} from "./config.mjs";
 import {initAlerts, onUpdateWorldTime} from "./alerts.mjs";
 import {LunarAlmanac, openAlmanac, refreshAlmanac, scheduleRefresh} from "./almanac.mjs";
 import {onGetSceneControlButtons, onRenderEmberCalendar} from "./controls.mjs";
 import {registerDebug} from "./debug.mjs";
 import {saveDebugFile} from "./debug-file.mjs";
+import {registerHubModule} from "./hub.mjs";
 import {editItemMoons, markedMoons, moonGear, onGetHeaderControls} from "./gear.mjs";
 import {exportJournal} from "./journal.mjs";
 import {applyModuleLanguage} from "./language.mjs";
@@ -20,6 +21,7 @@ import {weatherReport} from "./weather.mjs";
 const WATCHED_SETTINGS = new Set(["ember.weather", "crucible.party", "dnd5e.primaryParty"]);
 
 Hooks.once("init", () => {
+  registerHubModule({moduleId: MODULE_ID, tested: TESTED_VERSIONS});
   registerSettings();
   registerDebug();
   registerUsage(MODULE_ID, {
