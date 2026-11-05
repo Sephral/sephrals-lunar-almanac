@@ -9,7 +9,7 @@ export const MODULE_ID = "sephrals-lunar-almanac";
 export const TEMPLATES = `modules/${MODULE_ID}/templates`;
 
 /** The versions of Ember and Foundry the module was verified against (see the self-test). */
-export const TESTED_VERSIONS = {ember: "0.6.3", core: "14.369"};
+export const TESTED_VERSIONS = {ember: "0.6.3", core: "14.370"};
 
 /** Actor types of player characters: Crucible heroes and D&D 5e characters. */
 export const HERO_TYPES = ["hero", "character"];
