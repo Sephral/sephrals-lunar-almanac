@@ -3,6 +3,7 @@ import {initAlerts, onUpdateWorldTime} from "./alerts.mjs";
 import {LunarAlmanac, openAlmanac, refreshAlmanac, scheduleRefresh} from "./almanac.mjs";
 import {onGetSceneControlButtons, onRenderEmberCalendar} from "./controls.mjs";
 import {registerDebug} from "./debug.mjs";
+import {adaptEmberCalendar} from "./ember-time.mjs";
 import {saveDebugFile} from "./debug-file.mjs";
 import {registerHubModule} from "./hub.mjs";
 import {editItemMoons, markedMoons, moonGear, onGetHeaderControls} from "./gear.mjs";
@@ -99,6 +100,7 @@ Hooks.once("i18nInit", () => {
 Hooks.once("ready", async () => {
   await languageReady;
   if ( await waitForEmber() ) {
+    adaptEmberCalendar();
     initAlerts();
     registerRecoveryPeriods();
   }

@@ -117,5 +117,6 @@ The first button in the module settings, *Sephral’s Modules* (GMs only), opens
 ## Limits
 
 * The almanac needs Ember with its adventure scenes in the world. Without them Ember has no calendar.
+* Foundry 14.370 changed what a calendar receives when the world time moves, and Ember 0.6.3 stops there with an error. While both meet, the almanac hands Ember the old arguments, so time, weather and the phase notices keep running. A newer Ember is left alone.
 * Recognizing moon sensitive gear on its own works in Crucible. In other systems mark the items yourself.
 * Weather names come from Ember and appear in the language Ember shows them in. Only the wind strengths have German names of their own. A wind strength Ember adds in a later version keeps Ember's name.
