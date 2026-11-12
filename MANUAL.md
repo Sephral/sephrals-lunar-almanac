@@ -74,7 +74,7 @@ With the GM’s consent only the active GM’s browser counts, and it sends at m
 * on how many of the last 30 days the module was used
 * how often the almanac is opened from the calendar or the token controls, it looks ahead to another day, an actor or the cosmos scene is opened from it, the almanac is written to the journal and gear is marked as moon sensitive
 * the settings *Phase notifications*, *Full moons in the chat* and *Timeline length* (only the chosen option)
-* where errors occur in the module code: file, line and error type, never the error message
+* where errors occur in the module code: file, line, error type and whether the error arose in the module itself, in Foundry, in the game system or in another module, never the error message or the name of another module
 
 No names, chat messages, notes, dice results or other content of the world are sent.
 
