@@ -63,7 +63,7 @@ export function onRenderEmberCalendar(app, element) {
  */
 export function refreshButtons() {
   // Only a reset asks the getSceneControlButtons hook for the tools again
-  ui.controls?.render({reset: true});
+  ui.controls?.render({reset: true})?.catch?.(() => {});
   const calendar = globalThis.ember?.ui?.calendar;
   if ( calendar?.rendered ) onRenderEmberCalendar(calendar, calendar.element);
 }
